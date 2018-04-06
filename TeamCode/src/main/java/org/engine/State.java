@@ -1,5 +1,7 @@
 package org.engine;
 
+import org.driver.Driver;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,10 +18,10 @@ public abstract class State implements Runnable  {
     private volatile boolean isFinished = false;
     private byte layer = 0;
     public static String TAG = "PROGRAM.STATE";
-    public Engine engine;
+    public Engine engine = Driver.instance;
 
 
-    public void init(){}
+    public void init() {}
 
     public abstract void exec();
 
