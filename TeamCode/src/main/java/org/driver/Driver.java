@@ -3,7 +3,7 @@ package org.driver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.driver.states.Home;
-import org.driver.states.Move;
+import org.driver.states.BaseMover;
 import org.driver.states.PenDown;
 import org.driver.states.PenUp;
 import org.engine.Engine;
@@ -47,7 +47,7 @@ public class Driver extends Engine {
                     break;
                 case "move":
                     Support.puts("Driver", "Added MOVE: " +event.x+ ":"+ event.y);
-                    addState(new Move(event.x, event.y));
+                    addState(new BaseMover(event.x, event.y));
                     break;
                 default:
                     Support.puts("Driver", "Unknown instruction: " +event.type);

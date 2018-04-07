@@ -1,14 +1,14 @@
 package org.driver.states;
 
-import org.engine.State;
-import org.engine.Support;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
-public class Home extends State {
+import org.engine.State;
+
+public class Home extends BaseMover {
+
     public Home() {
-    }
-    @Override
-    public void exec() {
-        Support.puts("Home", "Homing pen...");
-        setFinished(true);
+        super(0, 0);
+        useEndStops();
     }
 }
