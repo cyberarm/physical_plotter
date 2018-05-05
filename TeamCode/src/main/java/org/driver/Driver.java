@@ -1,9 +1,10 @@
 package org.driver;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.driver.states.Home;
 import org.driver.states.BaseMover;
+import org.driver.states.Home;
 import org.driver.states.PenDown;
 import org.driver.states.PenUp;
 import org.engine.Engine;
@@ -25,6 +26,14 @@ public class Driver extends Engine {
         Support.puts("Driver", "Loading file...");
         decompiler = new Decompiler("/Download/compile.rcode");
         Support.puts("Driver", "Loaded file, has "+ decompiler.events.size() +" events.");
+    }
+
+    @Override
+    public void init() {
+        // RESET THE THINGS
+        hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        super.init();
     }
 
     @Override
