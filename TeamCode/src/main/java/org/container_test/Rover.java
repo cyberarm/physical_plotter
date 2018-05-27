@@ -1,12 +1,13 @@
 package org.container_test;
 
-import org.container.Container;
-import org.container.Set;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.container.Container;
+
+@TeleOp(name = "Rover")
 public class Rover extends Container {
     @Override
     public void setup() {
-        addSet(new Set());
-
+        addActor(new DriveTrain());
     }
 }
