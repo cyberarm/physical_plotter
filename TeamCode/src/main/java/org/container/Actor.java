@@ -1,20 +1,20 @@
 package org.container;
 
-import android.text.method.Touch;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-abstract class Actor {
-    private Container container;
-    private HardwareMap hardware;
+public abstract class Actor {
+    protected Container container;
+    protected HardwareMap hardware;
+    protected boolean isSleeping, isCompleted = false;
+    protected long wakeupTime;
 
     public Actor() {
         container= ContainerGlobal.activeContainer;
@@ -25,6 +25,28 @@ abstract class Actor {
     public abstract void setup();
 
     public abstract void update();
+
+    public abstract void buttonUp(Gamepad gamepad, String button);
+
+    // Actor will not be 'updated' for milliseconds.
+    // Avoid using to pause execution of a block, use delay instead.
+    public void sleep(long milliseconds) {
+        isSleeping = true;
+        wakeupTime = System.currentTimeMillis()+milliseconds;
+    }
+
+    // Halt execution of Container until milliseconds has passed.
+    public void delay(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean completed() {
+        return isCompleted;
+    }
 
     public DcMotor motor(String name) {
         return hardware.dcMotor.get(name);
