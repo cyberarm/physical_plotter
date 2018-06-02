@@ -47,6 +47,10 @@ public abstract class Container extends OpMode {
         collections.get(collectionIndex).buttonUp(gamepad, button);
     }
 
+    public void currentCollection() {
+        collections.get(collectionIndex);
+    }
+
     public void addCollection() {
         collections.add(new Collection());
     }

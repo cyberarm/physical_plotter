@@ -27,7 +27,8 @@ public class Collection {
             if (!actor.completed()) {
                 if (actor.isSleeping) {
                     if (System.currentTimeMillis() >= actor.wakeupTime) {
-                        actor.isSleeping = false; actor.wakeupTime = 0;
+                        actor.isSleeping = false;
+                        actor.wakeupTime = 0;
                         actor.update();
                     }
                 } else {
