@@ -33,9 +33,18 @@ public abstract class Actor {
     public void sleep(long milliseconds) {
         isSleeping = true;
         wakeupTime = System.currentTimeMillis()+milliseconds;
+//        while(isSleeping) {
+//            if (System.currentTimeMillis() >= wakeupTime) {
+//                isSleeping = false;
+//                wakeupTime = 0;
+//            } else {
+//                ContainerGlobal.activeContainer.currentCollection.update;
+//                delay(1); // Don't loop immeditly
+//            }
+//        }
     }
 
-    // Halt execution of Container until milliseconds has passed.
+    // Halt execution of Container->Collection until milliseconds has passed.
     public void delay(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
