@@ -1,6 +1,7 @@
 package org.engine;
 
 import org.driver.Driver;
+import org.greece.engine.SyncedMotors;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,7 +19,7 @@ public abstract class State implements Runnable  {
     private volatile boolean isFinished = false;
     private byte layer = 0;
     public static String TAG = "PROGRAM.STATE";
-    public Engine engine = Driver.instance;
+    public Engine engine = SyncedMotors.instance;
 
 
     public void init() {}
