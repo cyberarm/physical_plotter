@@ -15,13 +15,12 @@ import org.plotter.Event;
 
 @TeleOp(name = "Plotter Driver")
 public class Driver extends Engine {
-    public static Driver instance;
     Decompiler decompiler;
     int xAxisStep = 1;
     int yAxisStep = 1;
 
     public Driver() {
-        instance = this;
+        Engine.instance = this;
 
         Support.puts("Driver", "Loading file...");
         decompiler = new Decompiler("/Download/compile.rcode");

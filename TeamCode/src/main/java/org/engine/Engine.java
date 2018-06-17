@@ -25,6 +25,7 @@ import java.util.Objects;
 
 public abstract class Engine extends OpMode {
 
+    public static Engine instance;
     //Array To Hold States
     public State[][] processes = new State[100][100];
 
