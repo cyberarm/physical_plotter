@@ -19,7 +19,7 @@ public abstract class State implements Runnable  {
     private volatile boolean isFinished = false;
     private byte layer = 0;
     public static String TAG = "PROGRAM.STATE";
-    public Engine engine = SyncedMotors.instance;
+    public Engine engine = Engine.instance;
 
 
     public void init() {}
