@@ -5,6 +5,7 @@ import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import org.greece.statues.Motor;
@@ -30,6 +31,7 @@ public class MatchSpeedv3 extends OpMode {
         motors = new ArrayList();
         motors.add(new Motor(getMotor("leftMotor")));
         motors.add(new Motor(getMotor("rightMotor")));
+        getMotor("rightMotor").setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (int i = 0; i < motors.size(); i++) {
             Motor motor = motors.get(i);
