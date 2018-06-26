@@ -1,13 +1,10 @@
-package org.greece.states;
+package org.greece.engine;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.engine.State;
-import org.greece.engine.SyncedMotors;
-
-@TeleOp(name = "SyncedMotors")
+@TeleOp(name = "DualMotorSync")
 public class DualMotorSync extends OpMode {
     private DcMotor leftMotor, rightMotor;
 

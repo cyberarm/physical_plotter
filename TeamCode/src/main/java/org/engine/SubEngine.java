@@ -102,6 +102,17 @@ public abstract class SubEngine {
         }
     }
 
+    public void start() {
+        for(int x = 0; x < processes.length; x++){
+            for (int y = 0; y < processes.length; y++){
+                if(processes[x][y] != null){
+                    processes[x][y].start();
+                }
+            }
+
+        }
+    }
+
     public void stop(){
         for(int x = 0; x < processes.length; x++){
             for (int y = 0; y < processes.length; y++){
