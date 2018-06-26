@@ -142,7 +142,7 @@ public abstract class Engine extends OpMode {
     public void stop() {
         //end all states
         for (int x = 0; x < processes.length; x++) {
-            for (int y = 0; y < processes.length; y++) {
+            for (int y = 0; y < processes.length; y++) { // NOTE: processes.length should probably be processes[x].length
                 if (processes[x][y] != null) {
                     processes[x][y].setFinished(true);
                     processes[x][y].stop();

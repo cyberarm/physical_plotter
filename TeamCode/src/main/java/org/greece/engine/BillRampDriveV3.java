@@ -10,6 +10,6 @@ import org.greece.states.BillMotorRamp;
 public class BillRampDriveV3 extends Engine {
     @Override
     public void setup() {
-        addState(new BillMotorRamp("leftMotor", 5000, 0));
+        addState(new BillMotorRamp("leftMotor", 5000, 10_000));
     }
 }
