@@ -25,27 +25,20 @@ public class BillMotorRamp extends State {
 
     @Override
     public void exec() {
-        power = ((double) (System.currentTimeMillis()-startTimeMs) / (double) timeToRampMS);
+        power = ((double) (System.currentTimeMillis() - startTimeMs) / (double) timeToRampMS);
         power = Range.clip(power, -1.0, 1.0);
         motor.setPower(power);
+    }
 
-        engine.addTelemetry(new Runnable() {
-            @Override
-            public void run() {
-                engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-                engine.telemetry.addData("Power (ratio)", power);
-                engine.telemetry.addData("Time elapsed", System.currentTimeMillis()-startTimeMs);
-                engine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
-                engine.telemetry.addLine();
-                int devisor = 5;
-                int percent = (int) ((power*100.0)/devisor);
-                String progress = new String(""+percent*devisor+"% ");
-                for (int i = 0; i < percent; i++) {
-                    progress+="☼";
-                }
-                engine.telemetry.addLine(progress);
-                engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-            }
-        });
+    public void telemetry() {
+        engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+        engine.telemetry.addData("Power (ratio)", power);
+        engine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
+        engine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
+        engine.telemetry.addLine();
+
+        engine.telemetry.addLine(progressBar(25, power*100.0));
+
+        engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     }
 }

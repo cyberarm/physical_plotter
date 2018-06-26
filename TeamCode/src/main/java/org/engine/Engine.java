@@ -36,8 +36,6 @@ public abstract class Engine extends OpMode {
     //Array For Holding SubEngins
     private SubEngine[] subEngines = new SubEngine[100];
 
-    private ArrayList<Runnable> pendingTelemetry = new ArrayList<>();
-
     //Keep Track of processes X and Y
     private int processesX = 0;
     private int processesY = 0;
@@ -51,10 +49,6 @@ public abstract class Engine extends OpMode {
     private int processIndex = 0;
     private boolean machineFinished = false;
     private boolean opFinished = true;
-
-    public void addTelemetry(Runnable telemetry) {
-        pendingTelemetry.add(telemetry);
-    }
 
     //sets processes
     public void init() {
@@ -134,11 +128,13 @@ public abstract class Engine extends OpMode {
             }
         }
 
-//        telemetry.update();
-        for (int i = 0; i < pendingTelemetry.size(); i++) {
-            pendingTelemetry.get(i).run();
+        for (int x = 0; x < processes.length; x++) {
+            for (int y = 0; y < processes.length; y++) {
+                if (processes[x][y] != null && !processes[x][y].getIsFinished()){
+                    processes[x][y].telemetry();
+                }
+            }
         }
-        pendingTelemetry.clear();
     }
 
     //kills all processes running when program endes
