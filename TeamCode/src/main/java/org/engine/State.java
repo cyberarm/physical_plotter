@@ -1,7 +1,6 @@
 package org.engine;
 
 import org.driver.Driver;
-import org.greece.engine.SyncedMotors;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +22,7 @@ public abstract class State implements Runnable  {
 
 
     public void init() {}
+    public void start() {};
 
     public abstract void exec();
 

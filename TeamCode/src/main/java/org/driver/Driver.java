@@ -36,7 +36,7 @@ public class Driver extends Engine {
     }
 
     @Override
-    public void setProcesses() {
+    public void setup() {
         Support.puts("Driver", "Setting states...");
         for (int i = 0; i < decompiler.events.size(); i++) {
             Event event = decompiler.events.get(i);

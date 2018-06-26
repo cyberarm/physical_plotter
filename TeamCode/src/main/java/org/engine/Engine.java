@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -35,19 +36,15 @@ public abstract class Engine extends OpMode {
     //Array For Holding SubEngins
     private SubEngine[] subEngines = new SubEngine[100];
 
-    //Sub Process States array
-    private State[][] subProcesses;
+    private ArrayList<Runnable> pendingTelemetry = new ArrayList<>();
 
     //Keep Track of processes X and Y
     private int processesX = 0;
     private int processesY = 0;
 
-    //Keep Track of sub Processes X and Y
-    private int subX = 0;
-
     private boolean checkingStates = true;
 
-    boolean isSubEngineinit = false;
+    boolean isSubEngineInit = false;
 
     private static String TAG = "PROGRAM.ENGINE: ";
     private static String SUBTAG = "PROGRAM.SUBENGINE";
@@ -55,13 +52,15 @@ public abstract class Engine extends OpMode {
     private boolean machineFinished = false;
     private boolean opFinished = true;
 
-    private boolean subProcessFinished = true;
-
+    public void addTelemetry(Runnable telemetry) {
+        pendingTelemetry.add(telemetry);
+    }
 
     //sets processes
     public void init() {
+        Engine.instance = this;
         //Call Set Processes to fill arrays with states
-        setProcesses();
+        setup();
 
         //Loop through to processes array and initialize states
         for (int i = 0; i < processes.length; i++) {
@@ -82,6 +81,22 @@ public abstract class Engine extends OpMode {
         for(int i=0; i < subEngines.length; i++){
             if(subEngines[i] != null) {
                 Log.i(TAG, Integer.toString(i) + Objects.toString(subEngines[i]) + subEngines[i].getName());
+            }
+        }
+    }
+
+    public void start() {
+        for (int i = 0; i < processes.length; i++) {
+            for (int y = 0; y < processes.length; y++) {
+                if (processes[i][y] != null) {
+                    processes[i][y].start();
+                }
+            }
+        }
+
+        for(int i=0; i < subEngines.length; i++) {
+            if (subEngines[i] != null) {
+                subEngines[i].start();
             }
         }
     }
@@ -119,6 +134,11 @@ public abstract class Engine extends OpMode {
             }
         }
 
+//        telemetry.update();
+        for (int i = 0; i < pendingTelemetry.size(); i++) {
+            pendingTelemetry.get(i).run();
+        }
+        pendingTelemetry.clear();
     }
 
     //kills all processes running when program endes
@@ -211,7 +231,7 @@ public abstract class Engine extends OpMode {
 
 
         // Check if sub engines need to be initialized
-        if(!isSubEngineinit){
+        if(!isSubEngineInit){
             //Run set Proccesses on the sub engine
             subEngines[processIndex].setProcesses();
 
@@ -220,14 +240,14 @@ public abstract class Engine extends OpMode {
             }
 
             //set subEngineInit to true so this only runs through once
-            isSubEngineinit = true;
+            isSubEngineInit = true;
         }
         if(!subEngines[processIndex].isMachineFinished()){
             //Log.i(TAG,"STARTED CHECKING SUBSTATE PROCESS");
             subEngines[processIndex].checkStates();
             //Log.i(TAG, "FINISEHD CHECKING SUBSTATE PROCESSES");
         }else{
-            isSubEngineinit = false;
+            isSubEngineInit = false;
             Log.i(TAG,"FINISHED SUBENGINE");
             this.processIndex++;
             checkingStates = true;
@@ -235,7 +255,7 @@ public abstract class Engine extends OpMode {
     }
 
     //set processes in extended classes
-    public abstract void setProcesses();
+    public abstract void setup();
 
     public int getProcessIndex() {
         return processIndex;
@@ -258,7 +278,7 @@ public abstract class Engine extends OpMode {
 
     }
 
-    //For adding states when setProcesses is called
+    //For adding states when setup is called
     public void addState(State state){
 
         processesY = 0;
