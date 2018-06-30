@@ -28,6 +28,8 @@ public class BillMotorRamp extends State {
 
     @Override
     public void exec() {
+        if (hasRampedUp && hasTravelled && motor.getPower() <= 0.0) { setFinished(true); }
+
         if (!hasRampedUp) {
             power = ((double) (System.currentTimeMillis() - startTimeMs) / (double) timeToRampMS);
             if (power >= 1.0) { hasRampedUp = true; travelOffset = motor.getCurrentPosition(); }
@@ -43,7 +45,7 @@ public class BillMotorRamp extends State {
         power = Range.clip(power, -1.0, 1.0);
         motor.setPower(power);
 
-        if (hasRampedUp && hasTravelled && motor.getPower() <= 0.05) { motor.setPower(0); setFinished(true); }
+        if (hasRampedUp && hasTravelled && power <= 0.0) { motor.setPower(0); }
     }
 
     public int relativeTravelDistance(int distance, boolean negate) {
@@ -69,9 +71,9 @@ public class BillMotorRamp extends State {
         public void telemetry() {
         engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         if (hasRampedUp) {
-            engine.telemetry.addData("Ramp Up?", "✅");
+            engine.telemetry.addData("Ramped Up?", "✅");
         } else {
-            engine.telemetry.addData("Ramp Up?", "X");
+            engine.telemetry.addData("Ramped Up?", "X");
         }
         if (hasTravelled) {
             engine.telemetry.addData("Travelled?", "✅");
@@ -93,12 +95,14 @@ public class BillMotorRamp extends State {
             engine.telemetry.addLine();
             engine.telemetry.addLine(progressBar(25, distanceRatio * 100.0));
 
-        } else {
+        } else if (hasRampedUp && hasTravelled) {
             engine.telemetry.addData("Power (ratio)", power);
             engine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
             engine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
             engine.telemetry.addLine();
             engine.telemetry.addLine(progressBar(25, Math.abs(power-1.0) * 100.0));
+        } else if (getIsFinished()) {
+            engine.telemetry.addData("Ramped Down?", "✅");
         }
 
         engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
