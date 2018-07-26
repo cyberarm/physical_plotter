@@ -35,6 +35,7 @@ public abstract class State implements Runnable {
     public void run() {
         while (!isFinished) {
             exec();
+            sleep(1);
         }
     }
 
