@@ -4,6 +4,9 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.driver.Driver;
+import org.driver.states.Wait;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -215,9 +218,14 @@ public abstract class Engine extends OpMode {
                 checkingStates = false;
             }
             else if (processes[processIndex][0] == null && !machineFinished) {
-                Log.i(TAG, "MACHINE TERMINATED");
-                machineFinished = true;
-                stop();
+                if (Driver.instance != null) {
+                    ((Driver) Driver.instance).pendingWork = false;
+                    addState(new Wait((Driver) Driver.instance));
+                } else {
+                    Log.i(TAG, "MACHINE TERMINATED");
+                    machineFinished = true;
+                    stop();
+                }
             }
 
         }
