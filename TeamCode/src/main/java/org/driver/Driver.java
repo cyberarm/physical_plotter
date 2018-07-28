@@ -28,6 +28,9 @@ public class Driver extends Engine {
   int yAxisStep = 1;
 
   public Driver() {
+    if (Driver.instance != null) {
+      Driver.instance.stop();
+    }
     Engine.instance = this;
     Driver.instance = this;
 
@@ -56,9 +59,9 @@ public class Driver extends Engine {
   @Override
   public void init() {
     // RESET THE THINGS
-    hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    hardwareMap.servo.get("svPen").setPosition(1.0);
+//    hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//    hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//    hardwareMap.servo.get("svPen").setPosition(1.0);
     super.init();
   }
 
@@ -69,14 +72,17 @@ public class Driver extends Engine {
 
   @Override
   public void stop() {
+    super.stop();
+
     Support.puts("Driver", "Stopping server...");
     try {
-    server.stop();
-    Support.puts("Driver", "Stopped server.");
+      if (server != null) {
+        server.stop();
+        Support.puts("Driver", "Stopped server.");
+      }
     } catch (IOException e) {
       Support.puts("Driver", "Failed to stop server!");
       e.printStackTrace();
     }
-    super.stop();
   }
 }

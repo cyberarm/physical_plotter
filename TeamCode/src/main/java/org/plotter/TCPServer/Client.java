@@ -58,6 +58,7 @@ public class Client {
   public void close() throws IOException {
     bufferedReader.close();
     bufferedWriter.close();
+    socketConnected = false;
 
     socket.close();
   }
