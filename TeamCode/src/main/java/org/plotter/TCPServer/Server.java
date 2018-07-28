@@ -55,8 +55,11 @@ public class Server {
 
   public void stop() throws IOException {
     runServer = false;
-    server.close();
-    while (!server.isClosed()) {
+    if (activeClient != null){ activeClient.close(); }
+    if (server != null) {
+      server.close();
+//      while (!server.isClosed()) {
+//      }
     }
   }
 }
