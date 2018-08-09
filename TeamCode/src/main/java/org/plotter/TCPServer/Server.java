@@ -2,6 +2,7 @@ package org.plotter.TCPServer;
 
 import android.annotation.TargetApi;
 import android.system.ErrnoException;
+import android.util.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -54,6 +55,7 @@ public class Server {
   }
 
   public void stop() throws IOException {
+    Log.i("DRIVER", "STOPPING");
     runServer = false;
     if (activeClient != null){ activeClient.close(); }
     if (server != null) {

@@ -107,8 +107,8 @@ public class Handler {
         response += "TIME:" + System.currentTimeMillis();
         response += "\nMachine STATE:\n"
 //                + "PEN is "+ Engine.instance.hardwareMap.servo.get("svPen").getPosition()+"\n"
-//                + "X is "+Engine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition()+"\n"
-//                + "Y is "+Engine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition()+"\n"
+                + "X is "+Engine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition()+"\n"
+                + "Y is "+Engine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition()+"\n"
                 + "X_ENDSTOP is "+Engine.instance.hardwareMap.touchSensor.get("xAxisEndStop").isPressed()+"\n"
                 + "Y_ENDSTOP is "+Engine.instance.hardwareMap.touchSensor.get("yAxisEndStop").isPressed()+"\n";
         break;

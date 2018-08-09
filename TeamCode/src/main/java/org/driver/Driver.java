@@ -59,8 +59,8 @@ public class Driver extends Engine {
   @Override
   public void init() {
     // RESET THE THINGS
-//    hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//    hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //    hardwareMap.servo.get("svPen").setPosition(1.0);
     super.init();
   }

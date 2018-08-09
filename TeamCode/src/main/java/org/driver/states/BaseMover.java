@@ -1,5 +1,7 @@
 package org.driver.states;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -88,10 +90,10 @@ public class BaseMover extends State {
       }
 
 //            if (((boolean) encoderData.get("x_axis_endstop_activated") || xAxis.getPower() == 0.0) && ((boolean) encoderData.get("y_axis_endstop_activated") || yAxis.getPower() == 0.0)) {
-      if (((boolean) encoderData.get("y_axis_endstop_activated") || yAxis.getPower() == 0.0)) {
-        setFinished(true);
-        return;
-      }
+//      if ((boolean) encoderData.get("y_axis_endstop_activated")) {
+//        setFinished(true);
+//        return;
+//      }
 
     } else {
       checkEncoder("xAxis", xAxis, targetX, faultThreshold, ABORT);
@@ -114,7 +116,7 @@ public class BaseMover extends State {
 
         } else {
           xAxis.setPower(0);
-          setFinished(true);
+//          setFinished(true);
         }
       }
     }
@@ -160,6 +162,7 @@ public class BaseMover extends State {
           }
 
           same_position_count++;
+          Log.i("BaseMover", ""+friendlyName+" -> "+same_position_count+" fault count");
           encoderData.put(friendlyName, "" + last_position + ":" + same_position_count);
         }
       } else {
@@ -172,8 +175,8 @@ public class BaseMover extends State {
     if (resolver == ABORT) {
 //            throw new RuntimeException("Encoder on "+name+" is broken or the motor is stalled!");
       engine.telemetry.addData("Error", "Encoder on " + name + " is broken or the motor is stalled!" + engine.getRuntime());
-      setFinished(true);
-      engine.stop();
+//      setFinished(true);
+//      engine.stop();
 
     } else if (resolver == HALT_MOTOR) {
       engine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Halting Motor.");
