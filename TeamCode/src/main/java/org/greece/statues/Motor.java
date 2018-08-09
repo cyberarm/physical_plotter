@@ -8,8 +8,11 @@ public class Motor {
     private double lastVelocity, currentVelocity;
     private DcMotor motor;
     private boolean hasUpdatedBefore = false;
+    private int fault = 0;
+    private int faultThreshold = 100;
+    private boolean stalled = false;
 
-    public Motor(DcMotor motor) {
+  public Motor(DcMotor motor) {
         this.motor = motor;
         this.lastUpdateMs = 0;
         this.lastPosition = 0;
@@ -18,7 +21,8 @@ public class Motor {
 
     public void update() {
         if (hasUpdatedBefore) {
-            currentVelocity = (motor.getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
+          currentVelocity = (motor.getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
+          faultCheck();
         } else { hasUpdatedBefore = true; }
 
         lastVelocity = currentVelocity;
@@ -26,7 +30,23 @@ public class Motor {
         lastUpdateMs = System.currentTimeMillis();
     }
 
-    public double velocity() {
+  private void faultCheck() {
+    if (Math.abs(motor.getPower()) >= 0.1) {
+      if (motor.getPower() < 0.0) {
+        if (motor.getCurrentPosition() <= lastPosition) {
+          fault+=1;
+          if (fault >= faultThreshold) { stalled = true; }
+        } else { fault = 0; }
+      } else if (motor.getPower() > 0.0){
+        if (motor.getCurrentPosition() <= lastPosition) {
+          fault+=1;
+          if (fault >= faultThreshold) { stalled = true; }
+        } else { fault = 0; }
+      }
+    }
+  }
+
+  public double velocity() {
         return currentVelocity;
     }
 
@@ -53,4 +73,17 @@ public class Motor {
     public double lastVelocity() {
         return lastVelocity;
     }
+
+    public boolean stalled() {
+      return stalled;
+    }
+
+  public void stop() {
+      motor.setPower(0.0);
+  }
+
+  public void resetEncoder() {
+      motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+  }
 }
