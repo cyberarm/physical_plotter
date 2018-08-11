@@ -1,6 +1,5 @@
 package org.driver.states;
 
-import org.driver.Driver;
 import org.engine.State;
 import org.greece.statues.EndStop;
 import org.greece.statues.Motor;
@@ -8,9 +7,9 @@ import org.greece.statues.Motor;
 public class Home extends State {
   private Motor xAxis, yAxis;
   private EndStop xAxisEndStop, yAxisEndStop;
+  private boolean xAxisHomed = false, yAxisHomed = false;
 
-  @Override
-  public void init() {
+  public Home() {
     xAxis = new Motor(engine.hardwareMap.dcMotor.get("xAxis"));
     yAxis = new Motor(engine.hardwareMap.dcMotor.get("yAxis"));
     xAxisEndStop = new EndStop(engine.hardwareMap.touchSensor.get("xAxisEndStop"));
@@ -22,14 +21,25 @@ public class Home extends State {
     xAxis.update();
     yAxis.update();
 
-    if (!xAxisEndStop.triggered() && !xAxis.stalled()) {
-      xAxis.getMotor().setPower(-0.1);
-
-    } else if (!yAxisEndStop.triggered() && !yAxis.stalled()) {
-        xAxis.stop();
-        yAxis.getMotor().setPower(-0.1);
-
+    if (!xAxisHomed) {
+      if (!xAxisEndStop.triggered()) {
+        xAxis.getMotor().setPower(-0.1);
       } else {
+        xAxisHomed = true;
+        xAxis.stop();
+      }
+    }
+
+    if (!yAxisHomed && xAxisHomed) {
+      if (!yAxisEndStop.triggered()) {
+        yAxis.getMotor().setPower(-0.1);
+      } else {
+        yAxisHomed = true;
+        yAxis.stop();
+      }
+    }
+
+    if (xAxisHomed && yAxisHomed) {
       xAxis.stop();
       yAxis.stop();
       xAxis.resetEncoder();

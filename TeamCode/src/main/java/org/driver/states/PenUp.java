@@ -15,7 +15,7 @@ public class PenUp extends State {
   @Override
   public void exec() {
     Support.puts("PenUp", "Raising pen...");
-    pen.setPosition(1.0);
+    pen.setPosition(-1.0);
     sleep(100);
     setFinished(true);
   }

@@ -1,5 +1,7 @@
 package org.greece.statues;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Motor {
@@ -14,6 +16,7 @@ public class Motor {
 
   public Motor(DcMotor motor) {
         this.motor = motor;
+         Log.i("MOTOR", motor.toString());
         this.lastUpdateMs = 0;
         this.lastPosition = 0;
         this.lastVelocity = 0;
@@ -35,13 +38,21 @@ public class Motor {
       if (motor.getPower() < 0.0) {
         if (motor.getCurrentPosition() <= lastPosition) {
           fault+=1;
-          if (fault >= faultThreshold) { stalled = true; }
-        } else { fault = 0; }
-      } else if (motor.getPower() > 0.0){
+          if (fault >= faultThreshold) {stalled = true;
+          }
+        } else {
+          fault = 0;
+        }
+
+      } else if (motor.getPower() > 0.0) {
         if (motor.getCurrentPosition() <= lastPosition) {
           fault+=1;
-          if (fault >= faultThreshold) { stalled = true; }
-        } else { fault = 0; }
+          if (fault >= faultThreshold) {
+            stalled = true;
+          }
+        } else {
+          fault = 0;
+        }
       }
     }
   }
@@ -84,6 +95,6 @@ public class Motor {
 
   public void resetEncoder() {
       motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+      motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
   }
 }
