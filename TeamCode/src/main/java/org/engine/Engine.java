@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.driver.Driver;
 import org.driver.states.Wait;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -174,6 +175,18 @@ public abstract class Engine extends OpMode {
                 subEngines[i].stop();
             }
         }
+
+      Driver driver = (Driver) this;
+      Support.puts("Driver", "Stopping server...");
+      try {
+        if (driver.server != null) {
+          driver.server.stop();
+          Support.puts("Driver", "Stopped server.");
+        }
+      } catch (IOException e) {
+        Support.puts("Driver", "Failed to stop server!");
+        e.printStackTrace();
+      }
     }
 
     public void checkStateFinished(){
