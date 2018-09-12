@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +30,16 @@ public class InputChecker {
   public void update() {
     for (int i = 0; i < buttonList.size(); i++) {
       try {
-        if ((boolean) gamepad.getClass().getMethod(buttonList.get(i)).invoke(gamepad)) {
+        Field field = gamepad.getClass().getDeclaredField(buttonList.get(i));
+        Gamepad g = new Gamepad();
+
+        if (field.getBoolean(g)) {
           System.out.println("Button: "+ buttonList.get(i));
           buttons.put(buttonList.get(i), true);
         } else {
 //          check(buttonList.get(i));
         }
-      } catch (NoSuchMethodException|InvocationTargetException|IllegalAccessException e) {
+      } catch (NoSuchFieldException|IllegalAccessException e) {
         e.printStackTrace();
       }
     }

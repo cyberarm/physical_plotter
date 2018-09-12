@@ -176,16 +176,20 @@ public abstract class Engine extends OpMode {
             }
         }
 
-      Driver driver = (Driver) this;
-      Support.puts("Driver", "Stopping server...");
       try {
-        if (driver.server != null) {
-          driver.server.stop();
-          Support.puts("Driver", "Stopped server.");
+        Driver driver = (Driver) this;
+        Support.puts("Driver", "Stopping server...");
+        try {
+          if (driver.server != null) {
+            driver.server.stop();
+            Support.puts("Driver", "Stopped server.");
+          }
+        } catch (IOException e) {
+          Support.puts("Driver", "Failed to stop server!");
+          e.printStackTrace();
         }
-      } catch (IOException e) {
-        Support.puts("Driver", "Failed to stop server!");
-        e.printStackTrace();
+      } catch(ClassCastException err) {
+          // Engine is not a Driver
       }
     }
 
