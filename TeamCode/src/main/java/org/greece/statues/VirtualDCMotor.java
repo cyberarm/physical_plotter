@@ -1,8 +1,13 @@
 package org.greece.statues;
 
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.util.Log;
 
-public class VirtualDCMotor extends AbstractMotor{
+public class VirtualDCMotor extends AbstractMotor {
+
+  private boolean simulateStall = false;
+  private int stallPosition = 0;
 
   public VirtualDCMotor(String name) {
     this.name = name;
@@ -11,14 +16,18 @@ public class VirtualDCMotor extends AbstractMotor{
     this.lastUpdateMs = 0;
     this.lastPosition = 0;
     this.lastVelocity = 0;
+
+    simulatedStall(4000);
   }
 
   public void update() {
     if (hasUpdatedBefore) {
-      currentVelocity = (getMotor().getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
+      currentVelocity = (getMotor().getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs) / 1000.0);
       simulateMotor();
       faultCheck();
-    } else { hasUpdatedBefore = true; }
+    } else {
+      hasUpdatedBefore = true;
+    }
 
 
     lastVelocity = currentVelocity;
@@ -27,42 +36,36 @@ public class VirtualDCMotor extends AbstractMotor{
   }
 
   private void simulateMotor() {
-    long time = System.currentTimeMillis()-lastUpdateMs;
+    long time = System.currentTimeMillis() - lastUpdateMs;
 
-    double i = (5*Math.abs(power))/time;
-    if (getPower() < 0) { // Moving BACKWARD
-      position-=i; // TODO: Maths
-    } else if (getPower() > 0) { // Moving FORWARD
-      position+=i; // TODO: Maths
-    } else { // Not Moving
+    if (shouldStall()) {
+      playErrorTone();
+    } else {
+      double i = (5 * Math.abs(power)) / time;
+      if (getPower() < 0) { // Moving BACKWARD
+        position -= i;
+      } else if (getPower() > 0) { // Moving FORWARD
+        position += i;
+      } else { // Not Moving
 
-    }
-  }
-
-  protected void faultCheck() {
-    if (Math.abs(getMotor().getPower()) >= 0.1) {
-      if (getMotor().getPower() < 0.0) {
-        if (getMotor().getCurrentPosition() >= lastPosition) {
-          fault+=1;
-          if (fault >= faultThreshold) {
-            stalled = true;
-          }
-        } else {
-          fault = 0;
-        }
-
-      } else if (getMotor().getPower() > 0.0) {
-        if (getMotor().getCurrentPosition() <= lastPosition) {
-          fault+=1;
-          if (fault >= faultThreshold) {
-            stalled = true;
-          }
-        } else {
-          fault = 0;
-        }
       }
     }
   }
+
+  public void simulatedStall(int stallPosition) {
+    this.simulateStall = true;
+    this.stallPosition = stallPosition;
+  }
+
+  private boolean shouldStall() {
+    if (between(getCurrentPosition(), stallPosition, fuzz)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  protected void faultCheck() {}
 
   public double velocity() {
     return currentVelocity;

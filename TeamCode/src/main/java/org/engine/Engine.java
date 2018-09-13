@@ -8,8 +8,6 @@ import org.driver.Driver;
 import org.driver.states.Wait;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Created by t420 on 9/29/2016.
@@ -32,69 +30,45 @@ public abstract class Engine extends OpMode {
 
     public static Engine instance;
     //Array To Hold States
-    public State[][] processes = new State[100][100];
+    public State[][] states = new State[100][100];
 
     //Array For Holding Threads
     private Thread[] threads = new Thread[100];
 
-    //Array For Holding SubEngins
-    private SubEngine[] subEngines = new SubEngine[100];
-
-    //Keep Track of processes X and Y
+    //Keep Track of states X and Y
     private int processesX = 0;
     private int processesY = 0;
 
     private boolean checkingStates = true;
 
-    boolean isSubEngineInit = false;
-
     private static String TAG = "PROGRAM.ENGINE: ";
-    private static String SUBTAG = "PROGRAM.SUBENGINE";
     private int processIndex = 0;
     private boolean machineFinished = false;
     private boolean opFinished = true;
 
-    //sets processes
+    //sets states
     public void init() {
         Engine.instance = this;
         //Call Set Processes to fill arrays with states
         setup();
 
-        //Loop through to processes array and initialize states
-        for (int i = 0; i < processes.length; i++) {
-            for (int y = 0; y < processes.length; y++) {
-                if (processes[i][y] != null) {
-                    processes[i][y].init();
+        //Loop through to states array and initialize states
+        for (int i = 0; i < states.length; i++) {
+            for (int y = 0; y < states.length; y++) {
+                if (states[i][y] != null) {
+                    states[i][y].init();
                     Log.i(TAG, "INIT" + "[" + Integer.toString(i) + "]" + "[" + Integer.toString(y) + "]");
                 }
-            }
-        }
-
-        for (int i = 0; i < subEngines.length; i++){
-            if(subEngines[i] != null && subEngines[i].isPreInit()){
-                subEngines[i].initStates();
-            }
-        }
-
-        for(int i=0; i < subEngines.length; i++){
-            if(subEngines[i] != null) {
-                Log.i(TAG, Integer.toString(i) + Objects.toString(subEngines[i]) + subEngines[i].getName());
             }
         }
     }
 
     public void start() {
-        for (int i = 0; i < processes.length; i++) {
-            for (int y = 0; y < processes.length; y++) {
-                if (processes[i][y] != null) {
-                    processes[i][y].start();
+        for (int i = 0; i < states.length; i++) {
+            for (int y = 0; y < states.length; y++) {
+                if (states[i][y] != null) {
+                    states[i][y].start();
                 }
-            }
-        }
-
-        for(int i=0; i < subEngines.length; i++) {
-            if (subEngines[i] != null) {
-                subEngines[i].start();
             }
         }
     }
@@ -105,92 +79,61 @@ public abstract class Engine extends OpMode {
         //check if we are checking states
         if(checkingStates) {
             checkStateFinished();
-
-        //Check if we are checking states inside sub engines
-        }else{
-
-            //Run evaluate on sub engines
-            if(!subEngines[processIndex].evaluated) {
-                Log.i(TAG,"EVALUATING SUB ENGINE : "+Integer.toString(processIndex));
-                subEngines[processIndex].evaluate();
-                subEngines[processIndex].setEvaluated(true);
-                /*Log.i(TAG,"FINISHED EVALUATING SUB ENGINE : "+ subEngines[processIndex].getName()+
-                        Integer.toString(processIndex));*/
-
-            }
-
-            //Check if sub engine is runnable
-            if(subEngines[processIndex].isRunable()) {
-
-                //check sub engines
-                checkSubEngines();
-            }else{
-                //if engine is not runnable than incrament processIndex and switch to "checking states"
-                Log.i(TAG, "SUB ENGINE NOT RUNNABLE : " + "[" + Integer.toString(processIndex) + "]" + "[0]");
-                checkingStates = true;
-                processIndex++;
-            }
         }
 
-        for (int x = 0; x < processes.length; x++) {
-            for (int y = 0; y < processes.length; y++) {
-                if (processes[x][y] != null && !processes[x][y].getIsFinished()){
-                    processes[x][y].telemetry();
+        for (int x = 0; x < states.length; x++) {
+            for (int y = 0; y < states.length; y++) {
+                if (states[x][y] != null && !states[x][y].getIsFinished()){
+                  try {
+                    Driver driver = (Driver) Engine.instance;
+                    if (states[x][y].getClass() != Wait.class) {
+                      driver.pendingWork = true;
+                    }
+                  } catch(ClassCastException err) {
+                    // Engine is not a Driver
+                  }
+                    states[x][y].telemetry();
                 }
             }
         }
     }
 
-    //kills all processes running when program endes
+    //kills all states running when program endes
     @Override
     public void stop() {
         //end all states
-        for (int x = 0; x < processes.length; x++) {
-            for (int y = 0; y < processes.length; y++) { // NOTE: processes.length should probably be processes[x].length
-                if (processes[x][y] != null) {
-                    processes[x][y].setFinished(true);
-                    processes[x][y].stop();
+        for (int x = 0; x < states.length; x++) {
+            for (int y = 0; y < states.length; y++) { // NOTE: states.length should probably be states[x].length
+                if (states[x][y] != null) {
+                    states[x][y].setFinished(true);
+                    states[x][y].stop();
                     Log.i(TAG, "KILLED OP : " + "[" + Integer.toString(x) + "]" + "[" + Integer.toString(y) + "]");
-                } else {
                 }
             }
         }
 
-        //End all sub engines
-        for(int i = 0; i < subEngines.length; i++ ){
-            if(subEngines[i] != null){
-                State[][] subStates = subEngines[i].getProcesses();
-                for(int x = 0; x < subStates.length; x ++){
-                    for(int y = 0; y <subStates.length; y++){
-                        if(subStates[x][y] != null){
-                            subStates[x][y].setFinished(true);
-                            subStates[x][y].stop();
-                        }
-                    }
-                }
+      // Dump server shutdown into a thread because the FTC stop() times out REALLY fast.
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            Driver driver = (Driver) Engine.instance;
+            Support.puts("Driver", "Stopping server...");
+            try {
+              if (driver.server != null) {
+                driver.server.stop();
+                Support.puts("Driver", "Stopped server.");
+              }
+            } catch (IOException e) {
+              Support.puts("Driver", "Failed to stop server!");
+              e.printStackTrace();
             }
-        }
-        for(int i = 0; i < subEngines.length; i ++){
-            if(subEngines[i]!= null){
-                subEngines[i].stop();
-            }
-        }
-
-      try {
-        Driver driver = (Driver) this;
-        Support.puts("Driver", "Stopping server...");
-        try {
-          if (driver.server != null) {
-            driver.server.stop();
-            Support.puts("Driver", "Stopped server.");
+          } catch(ClassCastException err) {
+              // Engine is not a Driver
           }
-        } catch (IOException e) {
-          Support.puts("Driver", "Failed to stop server!");
-          e.printStackTrace();
         }
-      } catch(ClassCastException err) {
-          // Engine is not a Driver
-      }
+      }).start();
+
     }
 
     public void checkStateFinished(){
@@ -200,10 +143,10 @@ public abstract class Engine extends OpMode {
 
             //Loop through to check if all sections of the current
             // state are finished, if so set opFinsished to true
-            for (int y = 0; y < processes.length; y++) {
+            for (int y = 0; y < states.length; y++) {
 
-                if (processes[processIndex][y] != null) {
-                    if (processes[processIndex][y].getIsFinished()) {
+                if (states[processIndex][y] != null) {
+                    if (states[processIndex][y].getIsFinished()) {
                         opFinished = true;
                         Log.i(TAG, "FINISHED OP : " + "[" + Integer.toString(processIndex) + "]" + "[" + Integer.toString(y) + "]");
                     } else {
@@ -220,21 +163,17 @@ public abstract class Engine extends OpMode {
 
 
         } else {
-            //If opmode is finished than set up the next set of processes or
-            if (processes[processIndex][0] != null) {
+            //If opmode is finished than set up the next set of states or
+            if (states[processIndex][0] != null) {
                 //set next state
-                for (int i = 0; i < processes.length; i++) {
-                    threads[i] = new Thread(processes[processIndex][i]);
+                for (int i = 0; i < states.length; i++) {
+                    threads[i] = new Thread(states[processIndex][i]);
                     threads[i].start();
                 }
                 opFinished = false;
                 Log.i(TAG, "Started State : " + Integer.toString(processIndex));
-
-
-            }else if(subEngines[processIndex] != null){
-                checkingStates = false;
             }
-            else if (processes[processIndex][0] == null && !machineFinished) {
+            else if (states[processIndex][0] == null && !machineFinished) {
                 if (Driver.instance != null) {
                     ((Driver) Driver.instance).pendingWork = false;
                     addState(new Wait((Driver) Driver.instance));
@@ -248,49 +187,22 @@ public abstract class Engine extends OpMode {
         }
     }
 
-    public void checkSubEngines(){
-
-
-        // Check if sub engines need to be initialized
-        if(!isSubEngineInit){
-            //Run set Proccesses on the sub engine
-            subEngines[processIndex].setProcesses();
-
-            if(!subEngines[processIndex].isPreInit()) {
-                subEngines[processIndex].initStates();
-            }
-
-            //set subEngineInit to true so this only runs through once
-            isSubEngineInit = true;
-        }
-        if(!subEngines[processIndex].isMachineFinished()){
-            //Log.i(TAG,"STARTED CHECKING SUBSTATE PROCESS");
-            subEngines[processIndex].checkStates();
-            //Log.i(TAG, "FINISEHD CHECKING SUBSTATE PROCESSES");
-        }else{
-            isSubEngineInit = false;
-            Log.i(TAG,"FINISHED SUBENGINE");
-            this.processIndex++;
-            checkingStates = true;
-        }
-    }
-
-    //set processes in extended classes
+    //set states in extended classes
     public abstract void setup();
 
     public int getProcessIndex() {
         return processIndex;
     }
 
-    //adds the ability to add processes inside states
+    //adds the ability to add states inside states
     public void addInLineProcess(State state,boolean init) {
-        for(int i = 0; i < processes.length;i ++){
-            if(processes[processIndex][i] == null || processes[processIndex][i].getIsFinished()){
+        for(int i = 0; i < states.length; i ++){
+            if(states[processIndex][i] == null || states[processIndex][i].getIsFinished()){
                 if(init){
                     state.init();
                 }
-                processes[processIndex][i] = state;
-                Thread thread = new Thread(processes[processIndex][i]);
+                states[processIndex][i] = state;
+                Thread thread = new Thread(states[processIndex][i]);
                 thread.start();
                 Log.i(TAG, "ADDED THREAD AT : " + "[" + Integer.toString(getProcessIndex()) + "]" + "[" + Integer.toString(i) + "]");
                 break;
@@ -304,7 +216,7 @@ public abstract class Engine extends OpMode {
 
         processesY = 0;
 
-        processes[processesX][processesY] = state;
+        states[processesX][processesY] = state;
 
         processesY++;
         processesX++;
@@ -314,13 +226,7 @@ public abstract class Engine extends OpMode {
     }
 
     public void addThreadedState(State state){
-        processes[processesX -1][processesY] = state;
+        states[processesX -1][processesY] = state;
         processesY++;
     }
-
-    public void addSubEngine(SubEngine subEngine){
-        subEngines[processesX] = subEngine;
-        processesX++;
-    }
-
 }

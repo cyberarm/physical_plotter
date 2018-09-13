@@ -5,50 +5,50 @@ import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Motor extends AbstractMotor {
-    private long lastUpdateMs;
-    private int lastPosition;
-    private double lastVelocity, currentVelocity;
-    private DcMotor motor;
-    private boolean hasUpdatedBefore = false;
-    private int fault = 0;
-    private int faultThreshold = 100;
-    private boolean stalled = false;
+  private DcMotor motor;
 
   public Motor(DcMotor motor) {
-        this.motor = motor;
-         Log.i("MOTOR", getMotor().toString());
-        this.lastUpdateMs = 0;
-        this.lastPosition = 0;
-        this.lastVelocity = 0;
+    this.motor = motor;
+    Log.i("MOTOR", getMotor().toString());
+    this.lastUpdateMs = 0;
+    this.lastPosition = 0;
+    this.lastVelocity = 0;
+  }
+
+  public void update() {
+    if (hasUpdatedBefore) {
+      currentVelocity = (getMotor().getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs) / 1000.0);
+      faultCheck();
+    } else {
+      hasUpdatedBefore = true;
     }
 
-    public void update() {
-        if (hasUpdatedBefore) {
-          currentVelocity = (getMotor().getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
-          faultCheck();
-        } else { hasUpdatedBefore = true; }
-
-        lastVelocity = currentVelocity;
-        lastPosition = getMotor().getCurrentPosition();
-        lastUpdateMs = System.currentTimeMillis();
-    }
+    lastVelocity = currentVelocity;
+    lastPosition = getMotor().getCurrentPosition();
+    lastUpdateMs = System.currentTimeMillis();
+  }
 
   protected void faultCheck() {
-    if (Math.abs(getMotor().getPower()) >= 0.1) {
-      if (getMotor().getPower() < 0.0) {
-        if (getMotor().getCurrentPosition() <= lastPosition) {
-          fault+=1;
-          if (fault >= faultThreshold) {stalled = true;
+    if (Math.abs(getMotor().getPower()) > 0) { // Should be moving?
+      if (getMotor().getPower() < 0.0) { // Is moving backward?
+        if (getMotor().getCurrentPosition() >= lastPosition) {
+          fault += 1;
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            getMotor().setPower(0);
           }
         } else {
           fault = 0;
         }
 
-      } else if (getMotor().getPower() > 0.0) {
+      } else if (getMotor().getPower() > 0.0) { // Is moving Forward?
         if (getMotor().getCurrentPosition() <= lastPosition) {
-          fault+=1;
+          fault += 1;
           if (fault >= faultThreshold) {
             stalled = true;
+            playErrorTone();
+            getMotor().setPower(0);
           }
         } else {
           fault = 0;
@@ -58,40 +58,45 @@ public class Motor extends AbstractMotor {
   }
 
   public double velocity() {
-        return currentVelocity;
-    }
+    return currentVelocity;
+  }
 
-    public String name() {
-       return getMotor().getDeviceName();
-    }
+  public String name() {
+    return getMotor().getDeviceName();
+  }
 
-    public double power() {
-       return getMotor().getPower();
-    }
+  public double power() {
+    return getMotor().getPower();
+  }
 
-    public int position() {
-        return getMotor().getCurrentPosition();
-    }
+  public int position() {
+    return getMotor().getCurrentPosition();
+  }
 
-    public int lastPosition() {
-        return lastPosition;
-    }
+  public int lastPosition() {
+    return lastPosition;
+  }
 
-    public DcMotor getMotor() {
-      return motor;
-    }
+  public DcMotor getMotor() {
+    return motor;
+  }
 
-    public double lastVelocity() {
-        return lastVelocity;
-    }
+  public double lastVelocity() {
+    return lastVelocity;
+  }
 
-    public boolean stalled() {
-      return stalled;
-    }
+  public boolean stalled() {
+    return stalled;
+  }
 
   @Override
   public double getPower() {
     return getMotor().getPower();
+  }
+
+  @Override
+  public void setPower(double power) {
+    getMotor().setPower(power);
   }
 
   @Override
