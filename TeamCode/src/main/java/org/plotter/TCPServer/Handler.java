@@ -137,7 +137,7 @@ public class Handler {
       }
 
       default: {
-        response += "Unknown command '" + request + "', use help if needed.";
+        response += "Unknown command '" + request + "', use `help` if needed.";
         break;
       }
     }

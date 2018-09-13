@@ -89,6 +89,7 @@ public class Move extends State {
   @Override
   public void telemetry() {
     engine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
+    engine.telemetry.addData("Time", engine.getRuntime());
     engine.telemetry.addData("xAxis", "X: " + xAxis.position() + " Target X: " + xTarget);
     engine.telemetry.addData("yAxis", "Y: " + yAxis.position() + " Target Y: " + yTarget);
 
