@@ -46,8 +46,6 @@ public class Driver extends Engine {
         public void run() {
           try {
             server.start();
-          } catch (SocketException e) {
-            e.printStackTrace();
           } catch (IOException e) {
             e.printStackTrace();
           }

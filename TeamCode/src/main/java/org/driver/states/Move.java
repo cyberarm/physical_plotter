@@ -5,11 +5,9 @@ import org.engine.State;
 import org.greece.statues.AbstractMotor;
 import org.greece.statues.EndStop;
 import org.greece.statues.Motor;
-import org.greece.statues.VirtualDCMotor;
 
 public class Move extends State {
-  private Motor xAxis, yAxis;
-  private VirtualDCMotor xAxisV, yAxisV;
+  private AbstractMotor xAxis, yAxis;
   private EndStop xAxisEndStop, yAxisEndStop;
   private int xTarget, yTarget;
   private boolean xAxisMoved = false;
@@ -23,8 +21,8 @@ public class Move extends State {
     yTarget = y;
 
     if (((Driver) Driver.instance).offlineDebugging) {
-      xAxisV = (((Driver) Driver.instance).xAxisV);
-      yAxisV = (((Driver) Driver.instance).yAxisV);
+      xAxis = (((Driver) Driver.instance).xAxisV);
+      yAxis = (((Driver) Driver.instance).yAxisV);
     } else {
       xAxis = new Motor(engine.hardwareMap.dcMotor.get("xAxis"));
       yAxis = new Motor(engine.hardwareMap.dcMotor.get("yAxis"));
@@ -35,37 +33,33 @@ public class Move extends State {
 
   @Override
   public void exec() {
-    processor();
-  }
-
-  private void processor() {
     xAxis.update();
     yAxis.update();
 
     if (!xAxisMoved) {
       if (!between(xAxis.position(), xTarget)) {
-        if (xAxis.position() > xTarget + fuzz)
-          xAxis.getMotor().setPower(-0.1);
-        else if (xAxis.position() < xTarget + fuzz) {
-          xAxis.getMotor().setPower(0.1);
-        } else {
-          xAxis.stop();
-          xAxisMoved = true;
+        if (xAxis.position() > xTarget)
+          xAxis.setPower(-0.1);
+        else if (xAxis.position() < xTarget ) {
+          xAxis.setPower(0.1);
         }
+      } else {
+        xAxis.stop();
+        xAxisMoved = true;
       }
     }
 
 
     if (!yAxisMoved && xAxisMoved){
       if (!between(yAxis.position(), yTarget)) {
-        if (yAxis.position() > yTarget + fuzz)
-          yAxis.getMotor().setPower(-0.1);
-        else if (yAxis.position() < yTarget + fuzz) {
-          yAxis.getMotor().setPower(0.1);
-        } else {
-          yAxis.stop();
-          yAxisMoved = true;
+        if (yAxis.position() > yTarget)
+          yAxis.setPower(-0.1);
+        else if (yAxis.position() < yTarget) {
+          yAxis.setPower(0.1);
         }
+      } else {
+        yAxis.stop();
+        yAxisMoved = true;
       }
 
       if (xAxisMoved && yAxisMoved){
@@ -94,26 +88,23 @@ public class Move extends State {
 
   @Override
   public void telemetry() {
-    if (((Driver) Driver.instance).offlineDebugging) {
-      engine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
-      engine.telemetry.addData("xAxisV", "X: " + xAxisV.position() + " Target X: " + xTarget);
-      engine.telemetry.addData("yAxisV", "Y: " + yAxisV.position() + " Target Y: " + yTarget);
+    engine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
+    engine.telemetry.addData("xAxis", "X: " + xAxis.position() + " Target X: " + xTarget);
+    engine.telemetry.addData("yAxis", "Y: " + yAxis.position() + " Target Y: " + yTarget);
 
-      engine.telemetry.addData("xAxis Stalled", xAxisV.stalled());
-      engine.telemetry.addData("yAxis Stalled", yAxisV.stalled());
+    engine.telemetry.addData("xAxis hasUpdatedBefore", xAxis.hasUpdatedBefore);
+    engine.telemetry.addData("yAxis hasUpdatedBefore", yAxis.hasUpdatedBefore);
 
-      engine.telemetry.addData("xAxis Endstop", xAxisEndStop.triggered());
-      engine.telemetry.addData("yAxis Endstop", yAxisEndStop.triggered());
-    } else {
-      engine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
-      engine.telemetry.addData("xAxis", "X: " + xAxis.position() + " Target X: " + xTarget);
-      engine.telemetry.addData("yAxis", "Y: " + yAxis.position() + " Target Y: " + yTarget);
+    engine.telemetry.addData("xAxisMoved", xAxisMoved);
+    engine.telemetry.addData("yAxisMoved", yAxisMoved);
 
-      engine.telemetry.addData("xAxis Stalled", xAxis.stalled());
-      engine.telemetry.addData("yAxis Stalled", yAxis.stalled());
+    engine.telemetry.addData("xAxis Power", xAxis.getPower());
+    engine.telemetry.addData("yAxis Power", yAxis.getPower());
 
-      engine.telemetry.addData("xAxis Endstop", xAxisEndStop.triggered());
-      engine.telemetry.addData("yAxis Endstop", yAxisEndStop.triggered());
-    }
+    engine.telemetry.addData("xAxis Stalled", xAxis.stalled());
+    engine.telemetry.addData("yAxis Stalled", yAxis.stalled());
+
+    engine.telemetry.addData("xAxis Endstop", xAxisEndStop.triggered());
+    engine.telemetry.addData("yAxis Endstop", yAxisEndStop.triggered());
   }
 }
