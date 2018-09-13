@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class Motor {
+public class Motor extends AbstractMotor {
     private long lastUpdateMs;
     private int lastPosition;
     private double lastVelocity, currentVelocity;
@@ -16,7 +16,7 @@ public class Motor {
 
   public Motor(DcMotor motor) {
         this.motor = motor;
-         Log.i("MOTOR", motor.toString());
+         Log.i("MOTOR", getMotor().toString());
         this.lastUpdateMs = 0;
         this.lastPosition = 0;
         this.lastVelocity = 0;
@@ -24,19 +24,19 @@ public class Motor {
 
     public void update() {
         if (hasUpdatedBefore) {
-          currentVelocity = (motor.getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
+          currentVelocity = (getMotor().getCurrentPosition() - lastPosition) / ((System.currentTimeMillis() - lastUpdateMs)/1000.0);
           faultCheck();
         } else { hasUpdatedBefore = true; }
 
         lastVelocity = currentVelocity;
-        lastPosition = motor.getCurrentPosition();
+        lastPosition = getMotor().getCurrentPosition();
         lastUpdateMs = System.currentTimeMillis();
     }
 
-  private void faultCheck() {
-    if (Math.abs(motor.getPower()) >= 0.1) {
-      if (motor.getPower() < 0.0) {
-        if (motor.getCurrentPosition() <= lastPosition) {
+  protected void faultCheck() {
+    if (Math.abs(getMotor().getPower()) >= 0.1) {
+      if (getMotor().getPower() < 0.0) {
+        if (getMotor().getCurrentPosition() <= lastPosition) {
           fault+=1;
           if (fault >= faultThreshold) {stalled = true;
           }
@@ -44,8 +44,8 @@ public class Motor {
           fault = 0;
         }
 
-      } else if (motor.getPower() > 0.0) {
-        if (motor.getCurrentPosition() <= lastPosition) {
+      } else if (getMotor().getPower() > 0.0) {
+        if (getMotor().getCurrentPosition() <= lastPosition) {
           fault+=1;
           if (fault >= faultThreshold) {
             stalled = true;
@@ -62,15 +62,15 @@ public class Motor {
     }
 
     public String name() {
-       return motor.getDeviceName();
+       return getMotor().getDeviceName();
     }
 
     public double power() {
-       return motor.getPower();
+       return getMotor().getPower();
     }
 
     public int position() {
-        return motor.getCurrentPosition();
+        return 0;//;getMotor().getCurrentPosition();
     }
 
     public int lastPosition() {
@@ -78,7 +78,7 @@ public class Motor {
     }
 
     public DcMotor getMotor() {
-        return motor;
+      return motor;
     }
 
     public double lastVelocity() {
@@ -89,12 +89,27 @@ public class Motor {
       return stalled;
     }
 
+  @Override
+  public double getPower() {
+    return getMotor().getPower();
+  }
+
+  @Override
+  public int getCurrentPosition() {
+    return getMotor().getCurrentPosition();
+  }
+
+  @Override
+  public String getDeviceName() {
+    return getMotor().getDeviceName();
+  }
+
   public void stop() {
-      motor.setPower(0.0);
+    getMotor().setPower(0.0);
   }
 
   public void resetEncoder() {
-      motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    getMotor().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    getMotor().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
   }
 }

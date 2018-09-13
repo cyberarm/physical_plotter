@@ -10,6 +10,7 @@ import org.driver.states.PenUp;
 import org.driver.states.Wait;
 import org.engine.Engine;
 import org.engine.Support;
+import org.greece.statues.VirtualDCMotor;
 import org.plotter.Decompiler;
 import org.plotter.Event;
 import org.plotter.TCPServer.Server;
@@ -24,11 +25,18 @@ public class Driver extends Engine {
   Decompiler decompiler;
   public Server server;
   public boolean pendingWork = false;
+  public boolean offlineDebugging = true;
+  public VirtualDCMotor xAxisV, yAxisV;
   int xAxisStep = 1;
   int yAxisStep = 1;
 
   public Driver() {
     Driver.instance = this;
+
+    if (offlineDebugging) {
+      xAxisV = new VirtualDCMotor("xAxis");
+      yAxisV = new VirtualDCMotor("yAxis");
+    }
 
     Support.puts("Driver", "Starting server...");
     try {
