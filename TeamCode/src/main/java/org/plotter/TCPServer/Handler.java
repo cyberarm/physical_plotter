@@ -86,7 +86,7 @@ public class Handler {
         break;
       }
       case "home": {
-        response += "Moving to 0:0";
+        response += "Homing to 0:0";
         ((Driver) Driver.instance).pendingWork = true;
         Engine.instance.addState(new Home());
         break;
@@ -104,13 +104,17 @@ public class Handler {
         break;
       }
       case "status": {
-        response += "TIME:" + System.currentTimeMillis();
-        response += "\nMachine STATE:\n"
-//                + "PEN is "+ Engine.instance.hardwareMap.servo.get("svPen").getPosition()+"\n"
-                + "X is "+Engine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition()+"\n"
-                + "Y is "+Engine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition()+"\n"
-                + "X_ENDSTOP is "+Engine.instance.hardwareMap.touchSensor.get("xAxisEndStop").isPressed()+"\n"
-                + "Y_ENDSTOP is "+Engine.instance.hardwareMap.touchSensor.get("yAxisEndStop").isPressed()+"\n";
+        response += "TIME:" + System.currentTimeMillis() + "\n";
+        response += "PEN: "+ Engine.instance.hardwareMap.servo.get("svPen").getPosition()+"\n";
+        if (((Driver) Driver.instance).offlineDebugging) {
+          response += "X: " + ((Driver) Driver.instance).xAxisV.getCurrentPosition() + "\n";
+          response += "Y: " + ((Driver) Driver.instance).yAxisV.getCurrentPosition() + "\n";
+        } else {
+          response += "X: " + Engine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition() + "\n";
+          response += "Y: " + Engine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition() + "\n";
+        }
+        response += "X_ENDSTOP: "+Engine.instance.hardwareMap.touchSensor.get("xAxisEndStop").isPressed()+"\n";
+        response += "Y_ENDSTOP: "+Engine.instance.hardwareMap.touchSensor.get("yAxisEndStop").isPressed()+"\n";
         break;
       }
       case "00000000": {
