@@ -1,15 +1,17 @@
 package org.greece.states;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.container.InputChecker;
 import org.engine.State;
-import org.greece.statues.RevTOFDistanceSensor;
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class BlinkinLedDriverState extends State {
   ServoImplEx pwm_output;
-//  RevTOFDistanceSensor TOFSensor;
+  DistanceSensor distance;
 
 
   InputChecker inputChecker;
@@ -22,7 +24,7 @@ public class BlinkinLedDriverState extends State {
   @Override
   public void init() {
     pwm_output = (ServoImplEx) engine.hardwareMap.servo.get("pwm");
-//    TOFSensor = engine.hardwareMap.get(RevTOFDistanceSensor.class, "distance");
+    distance = engine.hardwareMap.get(DistanceSensor.class, "distance");
 
     pwm_output.setPwmRange(new PwmControl.PwmRange(1000.0, 2000.0));
     inputChecker = new InputChecker(engine.gamepad1);
@@ -70,7 +72,8 @@ public class BlinkinLedDriverState extends State {
     engine.telemetry.addData("PWM target", pwm_target);
     engine.telemetry.addData("PWM position/power", do_math(pwm_target));
     engine.telemetry.addData("Next change", ""+(next_time-System.currentTimeMillis())+" ms");
-//    engine.telemetry.addData("Distance Sensor WHO_AM_I", ""+TOFSensor.getWhoAmIRAW());
     engine.telemetry.addData("Gamepad1 Timestamp", engine.gamepad1.timestamp);
+    engine.telemetry.addLine();
+    engine.telemetry.addData("Distance in MM", distance.getDistance(DistanceUnit.MM));
   }
 }
