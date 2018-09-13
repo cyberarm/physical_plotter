@@ -70,7 +70,7 @@ public class Motor extends AbstractMotor {
     }
 
     public int position() {
-        return 0;//;getMotor().getCurrentPosition();
+        return getMotor().getCurrentPosition();
     }
 
     public int lastPosition() {
