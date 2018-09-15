@@ -1,22 +1,23 @@
 package org.driver.states;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.engine.State;
 import org.engine.Support;
 
 public class PenDown extends State {
-  Servo pen;
+  CRServo pen;
 
   public PenDown() {
-    pen = engine.hardwareMap.servo.get("svPen");
+    pen = engine.hardwareMap.crservo.get("svPen");
   }
 
   @Override
   public void exec() {
     Support.puts("PenDown", "Lowering pen...");
-    pen.setPosition(1.0);
-    sleep(100);
+    pen.setPower(0);
+    sleep(500);
     setFinished(true);
   }
 }

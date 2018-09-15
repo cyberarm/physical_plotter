@@ -1,5 +1,8 @@
 package org.driver;
 
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -25,13 +28,15 @@ public class Driver extends Engine {
   Decompiler decompiler;
   public Server server;
   public boolean pendingWork = false;
-  public boolean offlineDebugging = true;
+  public boolean offlineDebugging = false;
   public VirtualDCMotor xAxisV, yAxisV;
   int xAxisStep = 1;
   int yAxisStep = 1;
+  public ToneGenerator toneGenerator;
 
   public Driver() {
     Driver.instance = this;
+    this.toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
 
     if (offlineDebugging) {
       xAxisV = new VirtualDCMotor("xAxis");
@@ -65,10 +70,17 @@ public class Driver extends Engine {
     hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     hardwareMap.dcMotor.get("xAxis").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     hardwareMap.dcMotor.get("yAxis").setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    hardwareMap.servo.get("svPen").setPosition(-1.0);
+    hardwareMap.crservo.get("svPen").setPower(-0.5);
     super.init();
   }
 
   @Override
   public void setup() {}
+
+  @Override
+  public void stop() {
+    super.stop();
+    toneGenerator.release();
+  }
 }
+

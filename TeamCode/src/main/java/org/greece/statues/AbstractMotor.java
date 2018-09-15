@@ -5,6 +5,7 @@ import android.media.ToneGenerator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.driver.Driver;
 import org.engine.Engine;
 
 public abstract class AbstractMotor {
@@ -27,50 +28,11 @@ public abstract class AbstractMotor {
   protected int fuzz = 10; // Used to pad encoder position checks (POSITION == TARGET_POSITION +/- fuzz)
 
 
-  protected ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
+  protected ToneGenerator toneGenerator = Engine.driver.toneGenerator;
   protected long toneGeneratorStartedAt;
 
 
   public abstract void update();
-
-
-  protected void faultCheck() {
-    if (Math.abs(motor.getPower()) > 0) { // Should be moving?
-      if (motor.getPower() < 0) { // Is moving backward?
-        if (motor.getCurrentPosition() >= lastPosition) {
-
-          if (fault >= faultThreshold) {
-            stalled = true;
-            playErrorTone();
-            motor.setPower(0);
-          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
-            fault += 1;
-            lastFault = System.currentTimeMillis();
-          }
-        } else {
-          fault = 0;
-        }
-
-      } else if (motor.getPower() > 0) { // Is moving Forward?
-        if (motor.getCurrentPosition() <= lastPosition) {
-
-          if (fault >= faultThreshold) {
-            stalled = true;
-            playErrorTone();
-            motor.setPower(0);
-          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
-            fault += 1;
-            lastFault = System.currentTimeMillis();
-          }
-        } else {
-          fault = 0;
-        }
-      }
-    }
-
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
-  }
 
   public double velocity() {
     return currentVelocity;

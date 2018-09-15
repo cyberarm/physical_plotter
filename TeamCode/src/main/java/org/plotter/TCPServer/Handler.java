@@ -105,7 +105,7 @@ public class Handler {
       }
       case "status": {
         response += "TIME:" + System.currentTimeMillis() + "\n";
-        response += "PEN: "+ Engine.instance.hardwareMap.servo.get("svPen").getPosition()+"\n";
+        response += "PEN: "+ Engine.instance.hardwareMap.crservo.get("svPen").getPower()+"\n";
         if (((Driver) Driver.instance).offlineDebugging) {
           response += "X: " + ((Driver) Driver.instance).xAxisV.getCurrentPosition() + "\n";
           response += "Y: " + ((Driver) Driver.instance).yAxisV.getCurrentPosition() + "\n";

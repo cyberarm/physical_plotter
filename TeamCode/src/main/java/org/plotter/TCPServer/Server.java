@@ -6,19 +6,37 @@ import android.media.ToneGenerator;
 import android.system.ErrnoException;
 import android.util.Log;
 
+import org.driver.Driver;
+import org.engine.Engine;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 
+import static java.lang.Thread.sleep;
+
 public class Server {
+  private ToneGenerator toneGenerator;
   private ServerSocket server;
   private int port;
   private boolean runServer = false;
   private Client activeClient;
 
   public Server(int port) throws IOException {
+    int attempts = 0;
+    while(attempts < 10) { // really big number
+      try {
+        toneGenerator = Engine.driver.toneGenerator;
+        break;
+      } catch (NullPointerException err) {
+        attempts++;
+        try {
+          sleep(100);
+        } catch (InterruptedException e) {}
+      }
+    }
     this.server = new ServerSocket();
     server.setReuseAddress(true);
     this.port = port;
@@ -69,7 +87,7 @@ public class Server {
       }
 
       try {
-        Thread.sleep(10);
+        sleep(10);
       } catch (InterruptedException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -86,8 +104,9 @@ public class Server {
       while (!server.isClosed()) {
       }
       Log.i("DRIVER", "Server Stopped.");
-      ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
-      toneGenerator.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 500);
+      try {
+        toneGenerator.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 500);
+      } catch (NullPointerException e) {}
     }
   }
 }

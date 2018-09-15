@@ -8,7 +8,6 @@ import org.engine.Engine;
 
 public class Motor extends AbstractMotor {
   private DcMotor motor;
-
   public Motor(DcMotor motor) {
     this.motor = motor;
     Log.i("MOTOR", getMotor().toString());
@@ -62,6 +61,44 @@ public class Motor extends AbstractMotor {
 //    Engine.instance.telemetry.addData("Motor "+getDeviceName()+" Fault Threshold", faultThreshold);
 //  }
 
+  protected void faultCheck() {
+    if (Math.abs(getMotor().getPower()) > 0) { // Should be moving?
+      if (getMotor().getPower() < 0) { // Is moving backward?
+        if (getMotor().getCurrentPosition() >= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            getMotor().setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+
+      } else if (getMotor().getPower() > 0) { // Is moving Forward?
+        if (getMotor().getCurrentPosition() <= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            getMotor().setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+      }
+    }
+
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
+  }
+
   public double velocity() {
     return currentVelocity;
   }
@@ -83,7 +120,7 @@ public class Motor extends AbstractMotor {
   }
 
   public DcMotor getMotor() {
-    return motor;
+    return (DcMotor) motor;
   }
 
   public double lastVelocity() {

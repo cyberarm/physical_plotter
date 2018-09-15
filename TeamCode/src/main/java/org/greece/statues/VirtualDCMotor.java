@@ -37,6 +37,44 @@ public class VirtualDCMotor extends AbstractMotor {
     lastUpdateMs = System.currentTimeMillis();
   }
 
+  protected void faultCheck() {
+    if (Math.abs(motor.getPower()) > 0) { // Should be moving?
+      if (motor.getPower() < 0) { // Is moving backward?
+        if (motor.getCurrentPosition() >= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            motor.setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+
+      } else if (motor.getPower() > 0) { // Is moving Forward?
+        if (motor.getCurrentPosition() <= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            motor.setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+      }
+    }
+
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
+  }
+
   private void simulateMotor() {
     long time = System.currentTimeMillis() - lastUpdateMs;
     Engine.instance.telemetry.addData("VirtualDCMotor "+getDeviceName()+" Time Difference", time);
