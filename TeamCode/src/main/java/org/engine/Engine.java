@@ -17,139 +17,133 @@ import java.util.ArrayList;
 
 public abstract class Engine extends OpMode {
 
-    public static Engine instance;
-    //Array To Hold States
-    public ArrayList<State> states = new ArrayList<>();
-    public int activeStateIndex = 0;
+  public static Engine instance;
+  public static Driver driver = null;
+  //Array To Hold States
+  public ArrayList<State> states = new ArrayList<>();
+  public int activeStateIndex = 0;
 
 
-    //Array For Holding Threads
-    private ArrayList<Thread> threads = new ArrayList<>();
+  //Array For Holding Threads
+  private ArrayList<Thread> threads = new ArrayList<>();
 
-    private static String TAG = "PROGRAM.ENGINE: ";
+  private static String TAG = "PROGRAM.ENGINE: ";
 
-    //sets states
-    public void init() {
-        Engine.instance = this;
-        //Call Set Processes to fill arrays with states
-        setup();
+  //sets states
+  public void init() {
+    Engine.instance = this;
+    try {
+      driver = (Driver) Engine.instance;
+    } catch (ClassCastException err) {}
+    //Call Set Processes to fill arrays with states
+    setup();
 
-        //Loop through states array and initialize states
-        for (int i = 0; i < states.size(); i++) {
-          if (states.get(i) != null) {
-              states.get(i).init();
-          }
-        }
-    }
-
-    public void start() {
-      for (int i = 0; i < states.size(); i++) {
-        if (states.get(i) != null) {
-          states.get(i).start();
-        }
+    //Loop through states array and initialize states
+    for (int i = 0; i < states.size(); i++) {
+      if (states.get(i) != null) {
+        states.get(i).init();
       }
     }
+  }
 
-    //checks if ops are finished
-    public void loop() {
-      State state = null;
-      try {
-        state = states.get(activeStateIndex);
-      } catch (IndexOutOfBoundsException e) {
-        telemetry.addData("No state", "State at "+activeStateIndex+" is OutOfBounds");
+  public void start() {
+    for (int i = 0; i < states.size(); i++) {
+      if (states.get(i) != null) {
+        states.get(i).start();
       }
+    }
+  }
 
-      if (state != null) {
-        if ( !state.getIsFinished()) {
-          telemetry.addData("Running State", ""+state.getClass());
-
-          state.exec();
-          state.telemetry();
-        } else {
-          telemetry.addData("Next", "State");
-          activeStateIndex++;
-        }
+  //checks if ops are finished
+  public void loop() {
+    State state = null;
+    try {
+      state = states.get(activeStateIndex);
+    } catch (IndexOutOfBoundsException e) {
+      if (driver == null) {
+        telemetry.addData("No state", "State at " + activeStateIndex + " is OutOfBounds");
+        stop();
       } else {
-        telemetry.addData("NOTICE", "No active state!");
+        telemetry.addData("Waiting...", "Awaiting state from server.");
       }
-//      for (int i = 0; i < states.size(); i++) {
-//        if (states.get(i) != null && !states.get(i).getIsFinished()) {
-//          try {
-//            Driver driver = (Driver) Engine.instance;
-//            if (states.get(i).getClass() == Wait.class) {
-//              states.get(i).exec();
-//              states.get(i).telemetry();
-//
-//
-//              try {
-//                if (states.get(i+1) != null && states.get(i+1).getClass() != Wait.class) {
-//                  driver.pendingWork = true;
-//                }
-//              } catch (IndexOutOfBoundsException e) {}
-//
-//              break;
-//            } else {
-//              states.get(i).exec();
-//              states.get(i).telemetry();
-//              break;
-//            }
-//          } catch(ClassCastException err) {
-//            // Behave Like A Normal State
-//            states.get(i).exec();
-//            states.get(i).telemetry();
-//            break;
-//          }
-//
-//        } else {
-//          try {
-//            if (Driver.instance != null) {
-//              ((Driver) Driver.instance).pendingWork = false;
-//              addState(new Wait((Driver) Driver.instance));
-//            } else {
-//              stop();
-//            }
-//          } catch (ClassCastException e) {
-//          }
-//        }
-//      }
     }
 
-    //kills all states running when program endes
-    @Override
-    public void stop() {
-      for(int i = 0; i < states.size(); i++) {
-        states.get(i).stop();
-      }
+    if (state != null) {
+      if (!state.getIsFinished()) {
+        telemetry.addData("Running State", "" + state.getClass());
 
-      // Dump server shutdown into a thread because the FTC stop() times out REALLY fast.
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
+        state.exec();
+        state.telemetry();
+      } else {
+        telemetry.addData("Next", "State");
+        activeStateIndex++;
+        setupNextState();
+      }
+    } else {
+      telemetry.addData("NOTICE", "No active state!");
+    }
+
+    try {
+      if (states.get(activeStateIndex) != null && !states.get(activeStateIndex).getIsFinished()) {
+        if (driver.getClass() == Driver.class) {
           try {
-            Driver driver = (Driver) Engine.instance;
-            Support.puts("Driver", "Stopping server...");
-            try {
-              if (driver.server != null) {
-                driver.server.stop();
-                Support.puts("Driver", "Stopped server.");
-              }
-            } catch (IOException e) {
-              Support.puts("Driver", "Failed to stop server!");
-              e.printStackTrace();
+            if (states.get(activeStateIndex + 1) != null && states.get(activeStateIndex + 1).getClass() != Wait.class) {
+              driver.pendingWork = true;
+            } else {
+
             }
-          } catch(ClassCastException err) {
-              // Engine is not a Driver
+          } catch (IndexOutOfBoundsException e) {
           }
         }
-      }).start();
 
+      }
+    } catch (IndexOutOfBoundsException err) {
+    }
+  }
+
+
+  private void setupNextState() {
+    try {
+      states.get(activeStateIndex).init();
+    } catch (IndexOutOfBoundsException e) {
+      Log.i(TAG, "No state at " + activeStateIndex);
+    }
+  }
+
+  //kills all states running when program endes
+  @Override
+  public void stop() {
+    for (int i = 0; i < states.size(); i++) {
+      states.get(i).stop();
     }
 
-    //set states in extended classes
-    public abstract void setup();
+    // Dump server shutdown into a thread because the FTC stop() times out REALLY fast.
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        if (driver != null) {
+          Support.puts("Driver", "Stopping server...");
+          try {
+            if (driver.server != null) {
+              driver.server.stop();
+              Support.puts("Driver", "Stopped server.");
+            }
+          } catch (IOException e) {
+            Support.puts("Driver", "Failed to stop server!");
+            e.printStackTrace();
+          }
+        }
+      }
+    }).start();
 
-    //For adding states when setup is called
-    public void addState(State state) {
-      states.add(state);
-    }
+  }
+
+  //set states in extended classes
+  public abstract void setup();
+
+  //For adding states when setup is called
+  public void addState(State state) {
+    Log.i(TAG, "Adding state "+state.getClass());
+    states.add(state);
+  }
 }

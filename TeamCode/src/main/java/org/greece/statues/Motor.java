@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.engine.Engine;
+
 public class Motor extends AbstractMotor {
   private DcMotor motor;
 
@@ -28,34 +30,37 @@ public class Motor extends AbstractMotor {
     lastUpdateMs = System.currentTimeMillis();
   }
 
-  protected void faultCheck() {
-    if (Math.abs(getMotor().getPower()) > 0) { // Should be moving?
-      if (getMotor().getPower() < 0.0) { // Is moving backward?
-        if (getMotor().getCurrentPosition() >= lastPosition) {
-          fault += 1;
-          if (fault >= faultThreshold) {
-            stalled = true;
-            playErrorTone();
-            getMotor().setPower(0);
-          }
-        } else {
-          fault = 0;
-        }
-
-      } else if (getMotor().getPower() > 0.0) { // Is moving Forward?
-        if (getMotor().getCurrentPosition() <= lastPosition) {
-          fault += 1;
-          if (fault >= faultThreshold) {
-            stalled = true;
-            playErrorTone();
-            getMotor().setPower(0);
-          }
-        } else {
-          fault = 0;
-        }
-      }
-    }
-  }
+//  protected void faultCheck() {
+//    if (Math.abs(getMotor().getPower()) > 0) { // Should be moving?
+//      if (getMotor().getPower() < 0.0) { // Is moving backward?
+//        if (getMotor().getCurrentPosition() >= lastPosition) {
+//          fault += 1;
+//          if (fault >= faultThreshold) {
+//            stalled = true;
+//            playErrorTone();
+//            getMotor().setPower(0);
+//          }
+//        } else {
+//          fault = 0;
+//        }
+//
+//      } else if (getMotor().getPower() > 0.0) { // Is moving Forward?
+//        if (getMotor().getCurrentPosition() <= lastPosition) {
+//          fault += 1;
+//          if (fault >= faultThreshold) {
+//            stalled = true;
+//            playErrorTone();
+//            getMotor().setPower(0);
+//          }
+//        } else {
+//          fault = 0;
+//        }
+//      }
+//    }
+//
+//    Engine.instance.telemetry.addData("Motor "+getDeviceName()+" Faults", fault);
+//    Engine.instance.telemetry.addData("Motor "+getDeviceName()+" Fault Threshold", faultThreshold);
+//  }
 
   public double velocity() {
     return currentVelocity;

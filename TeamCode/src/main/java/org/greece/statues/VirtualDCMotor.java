@@ -4,6 +4,8 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.util.Log;
 
+import org.engine.Engine;
+
 public class VirtualDCMotor extends AbstractMotor {
 
   private boolean simulateStall = false;
@@ -37,11 +39,12 @@ public class VirtualDCMotor extends AbstractMotor {
 
   private void simulateMotor() {
     long time = System.currentTimeMillis() - lastUpdateMs;
+    Engine.instance.telemetry.addData("VirtualDCMotor "+getDeviceName()+" Time Difference", time);
 
     if (shouldStall()) {
       playErrorTone();
     } else {
-      double i = (5 * Math.abs(power)) / time;
+      double i = (5 * Math.abs(power)) * time; // Changed time sensitive thing apparently
       if (getPower() < 0) { // Moving BACKWARD
         position -= i;
       } else if (getPower() > 0) { // Moving FORWARD
@@ -64,8 +67,6 @@ public class VirtualDCMotor extends AbstractMotor {
       return false;
     }
   }
-
-  protected void faultCheck() {}
 
   public double velocity() {
     return currentVelocity;

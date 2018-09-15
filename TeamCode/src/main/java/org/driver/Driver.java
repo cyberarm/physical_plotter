@@ -70,7 +70,5 @@ public class Driver extends Engine {
   }
 
   @Override
-  public void setup() {
-    addState(new Wait(this));
-  }
+  public void setup() {}
 }

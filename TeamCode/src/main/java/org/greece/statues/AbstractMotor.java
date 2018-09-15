@@ -3,19 +3,28 @@ package org.greece.statues;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.engine.Engine;
+
 public abstract class AbstractMotor {
+  protected String name;
+  protected AbstractMotor motor;
+
   protected long lastUpdateMs;
   protected int lastPosition;
   protected double lastVelocity, currentVelocity;
   public boolean hasUpdatedBefore = false;
-  protected AbstractMotor motor;
-  protected int fault = 0;
-  protected int faultThreshold = 100;
-  protected boolean stalled = false;
+
+  protected int fault = 0; // Number of detected faults (Fault = encoder not changed)
+  protected int faultThreshold = 10; // Number of detected faults until Motor is declared stalled
+  protected long lastFault = 0; // Time in milliseconds, default to 0 to ensure first fault is trigger promptly
+  protected long faultTimeOut = 100; // milliseconds
+  protected boolean stalled = false; // Whether motor is stuck or encoder is broken
+
   protected double power = 0.0;
   protected double position = 0;
-  protected String name;
-  protected int fuzz = 10;
+  protected int fuzz = 10; // Used to pad encoder position checks (POSITION == TARGET_POSITION +/- fuzz)
 
 
   protected ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
@@ -24,7 +33,44 @@ public abstract class AbstractMotor {
 
   public abstract void update();
 
-  protected abstract void faultCheck();
+
+  protected void faultCheck() {
+    if (Math.abs(motor.getPower()) > 0) { // Should be moving?
+      if (motor.getPower() < 0) { // Is moving backward?
+        if (motor.getCurrentPosition() >= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            motor.setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+
+      } else if (motor.getPower() > 0) { // Is moving Forward?
+        if (motor.getCurrentPosition() <= lastPosition) {
+
+          if (fault >= faultThreshold) {
+            stalled = true;
+            playErrorTone();
+            motor.setPower(0);
+          } else if ((System.currentTimeMillis()-lastFault) >= faultTimeOut) {
+            fault += 1;
+            lastFault = System.currentTimeMillis();
+          }
+        } else {
+          fault = 0;
+        }
+      }
+    }
+
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
+    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
+  }
 
   public double velocity() {
     return currentVelocity;
