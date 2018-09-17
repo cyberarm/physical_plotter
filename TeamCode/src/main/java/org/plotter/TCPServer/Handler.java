@@ -2,6 +2,7 @@ package org.plotter.TCPServer;
 
 import android.system.ErrnoException;
 import android.util.Base64;
+import android.util.Log;
 
 import org.driver.Driver;
 import org.driver.states.Home;
@@ -34,7 +35,7 @@ public class Handler {
       }
 
       if (!string.isEmpty()) {
-        System.out.println(string);
+        Log.i("Handler", "Received string: "+string);
         if (client.authenticated) {
           client.write(respond(string));
         } else {
@@ -63,13 +64,10 @@ public class Handler {
     String response = "";
 
     switch (request.split(" ")[0]) {
-      case "mode": {
-        String mode = sub(request, "mode");
-        if (mode.equals("stream") || mode.equals("download")) {
-          response += "mode: " + mode;
-        } else {
-          response += "Error: Unknown mode '" + mode + "'";
-        }
+      case "download": {
+        Log.i("Handler", "Received 'download' command, processing...");
+
+        handleDownload(request);
         break;
       }
       case "move": {
@@ -147,6 +145,50 @@ public class Handler {
     System.out.println("Encoded: "+response);
 //    response+="\n";
     return response;
+  }
+
+  private void handleDownload(String request) {
+    String substring = sub(request, "download");
+    String[] list = substring.trim().split("\n");
+    String bit;
+
+    for (int i = 0; i < list.length; i++) {
+       bit = list[i].split(" ")[0];
+      switch (bit) {
+        case "pen_down": {
+          Log.i("Handler", "download processed pen_down");
+          Engine.instance.addState(new PenDown());
+          break;
+        }
+        case "pen_up": {
+          Log.i("Handler", "download processed pen_up");
+          Engine.instance.addState(new PenUp());
+          break;
+        }
+        case "move": {
+          Log.i("Handler", "download processed move");
+          try {
+            String localSubstring = sub(list[i], "move");
+            String[] localList = localSubstring.trim().split(":");
+
+            ((Driver) Driver.instance).pendingWork = true;
+            Engine.instance.addState(new Move(Integer.parseInt(localList[0]), Integer.parseInt(localList[1])));
+          } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+          }
+          break;
+        }
+        case "home": {
+          Log.i("Handler", "download processed home");
+          Engine.instance.addState(new Home());
+          break;
+        }
+        default: {
+          Log.i("Handler", "download failed to process: "+bit);
+          break;
+        }
+      }
+    }
   }
 
   public String encode(String string) {

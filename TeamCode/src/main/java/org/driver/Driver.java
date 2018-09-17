@@ -80,7 +80,6 @@ public class Driver extends Engine {
   @Override
   public void stop() {
     super.stop();
-    toneGenerator.release();
   }
 }
 
