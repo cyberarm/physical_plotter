@@ -33,10 +33,7 @@ public abstract class Engine extends OpMode {
   //sets states
   public void init() {
     Engine.instance = this;
-    try {
-      driver = (Driver) Engine.instance;
-      driverStatic = (Driver) Engine.instance;
-    } catch (ClassCastException err) {}
+
     //Call Set Processes to fill arrays with states
     setup();
 
@@ -73,7 +70,7 @@ public abstract class Engine extends OpMode {
     if (state != null) {
       if (!state.getIsFinished()) {
         telemetry.addData("[ENGINE] Running State", "" + state.getClass());
-        telemetry.addLine("[ENGINE] State "+activeStateIndex+1+" of "+states.size());
+        telemetry.addLine("[ENGINE] State "+activeStateIndex+" of "+states.size());
 
         state.exec();
         state.telemetry();

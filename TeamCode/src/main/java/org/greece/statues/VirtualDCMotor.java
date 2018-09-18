@@ -38,6 +38,8 @@ public class VirtualDCMotor extends AbstractMotor {
   }
 
   protected void faultCheck() {
+    // NOTE: Motor must be reporting a power > 0 to trigger faults
+
     if (Math.abs(motor.getPower()) > 0) { // Should be moving?
       if (motor.getPower() < 0) { // Is moving backward?
         if (motor.getCurrentPosition() >= lastPosition) {
@@ -166,5 +168,7 @@ public class VirtualDCMotor extends AbstractMotor {
 
   public void resetEncoder() {
     this.position = 0;
+    stalled = false;
+    fault = 0;
   }
 }

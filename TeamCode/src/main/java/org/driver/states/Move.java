@@ -2,6 +2,8 @@ package org.driver.states;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.CRServo;
+
 import org.driver.Driver;
 import org.engine.State;
 import org.greece.statues.AbstractMotor;
@@ -17,11 +19,13 @@ public class Move extends State {
   private int fuzz = 10;
   private int maxX = 4000;
   private  int maxY = 3000;
+  private CRServo svPen;
 
   public Move(int x, int y) {
     xTarget = x;
     yTarget = y;
 
+    svPen = engine.hardwareMap.crservo.get("svPen");
     if (((Driver) Driver.instance).offlineDebugging) {
       xAxis = (((Driver) Driver.instance).xAxisV);
       yAxis = (((Driver) Driver.instance).yAxisV);
@@ -38,6 +42,18 @@ public class Move extends State {
     xAxis.update();
     yAxis.update();
 
+    if (xAxis.stalled() || yAxis.stalled()) {
+      xAxis.stop();
+      yAxis.stop();
+
+      playErrorTone();
+    } else {
+      moveChecker();
+    }
+
+  }
+
+  private void moveChecker() {
     if (!xAxisMoved) {
       if (!between(xAxis.position(), xTarget)) {
         if (xAxis.position() > xTarget)
@@ -52,7 +68,7 @@ public class Move extends State {
     }
 
 
-    if (!yAxisMoved && xAxisMoved){
+    if (!yAxisMoved && (Math.abs(svPen.getPower()) > 0 || xAxisMoved)){ // allow both x and y to move at the same time if pen is up, otherwise wait for xAxis
       if (!between(yAxis.position(), yTarget)) {
         if (yAxis.position() > yTarget)
           yAxis.setPower(-0.1);

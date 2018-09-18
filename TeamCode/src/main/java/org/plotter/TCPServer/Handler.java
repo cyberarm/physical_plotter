@@ -131,7 +131,7 @@ public class Handler {
       case "help": {
         response += "Thank you for using the helpline:\n\n";
         response += "download RCODE - accepts list of rcode instructions separated by newlines.\n";
-        response += "stop - Attempts to immediately stop plotter.";
+        response += "stop - Attempts to immediately stop plotter.\n";
         response += "status - returns machine status.\n";
         response += "home\n";
         response += "pen_up\n";

@@ -28,6 +28,13 @@ public class Home extends State {
     xAxis.update();
     yAxis.update();
 
+    if (xAxis.stalled()) {xAxisHomed = true;}
+    if (yAxis.stalled()) {yAxisHomed = true;}
+
+    moveChecker();
+  }
+
+  private void moveChecker() {
     if (!xAxisHomed) {
       if (!xAxisEndStop.triggered()) {
         xAxis.setPower(-0.1);

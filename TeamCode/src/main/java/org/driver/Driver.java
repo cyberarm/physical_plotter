@@ -28,7 +28,7 @@ public class Driver extends Engine {
   Decompiler decompiler;
   public Server server;
   public boolean pendingWork = false;
-  public boolean offlineDebugging = false;
+  public boolean offlineDebugging = true;
   public VirtualDCMotor xAxisV, yAxisV;
   int xAxisStep = 1;
   int yAxisStep = 1;
@@ -36,6 +36,11 @@ public class Driver extends Engine {
 
   public Driver() {
     Driver.instance = this;
+    try {
+      driver = (Driver) Engine.instance;
+      driverStatic = (Driver) Engine.instance;
+    } catch (ClassCastException err) {}
+
     this.toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);
 
     if (offlineDebugging) {
