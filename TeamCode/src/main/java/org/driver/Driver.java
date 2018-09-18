@@ -28,7 +28,7 @@ public class Driver extends Engine {
   Decompiler decompiler;
   public Server server;
   public boolean pendingWork = false;
-  public boolean offlineDebugging = true;
+  public boolean offlineDebugging = false;
   public VirtualDCMotor xAxisV, yAxisV;
   int xAxisStep = 1;
   int yAxisStep = 1;
