@@ -28,7 +28,7 @@ public abstract class AbstractMotor {
   protected int fuzz = 10; // Used to pad encoder position checks (POSITION == TARGET_POSITION +/- fuzz)
 
 
-  protected ToneGenerator toneGenerator = Engine.driver.toneGenerator;
+  protected ToneGenerator toneGenerator = Engine.driverStatic.toneGenerator;
   protected long toneGeneratorStartedAt;
 
 

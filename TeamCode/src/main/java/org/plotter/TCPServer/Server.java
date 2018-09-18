@@ -28,7 +28,7 @@ public class Server {
     int attempts = 0;
     while(attempts < 10) { // really big number
       try {
-        toneGenerator = Engine.driver.toneGenerator;
+        toneGenerator = Engine.driverStatic.toneGenerator;
         break;
       } catch (NullPointerException err) {
         attempts++;

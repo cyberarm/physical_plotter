@@ -9,6 +9,7 @@ import org.driver.states.Home;
 import org.driver.states.Move;
 import org.driver.states.PenDown;
 import org.driver.states.PenUp;
+import org.driver.states.Stop;
 import org.engine.Engine;
 
 import java.io.IOException;
@@ -67,7 +68,15 @@ public class Handler {
       case "download": {
         Log.i("Handler", "Received 'download' command, processing...");
 
-        response += handleDownload(request);
+        response += handleDownload(request); // handleDownload returns a string to pass to client
+        break;
+      }
+      case "stop": {
+        Log.i("Handler", "Halting plotter!");
+        Engine.instance.states.clear();
+        Engine.instance.activeStateIndex = 0;
+        Engine.instance.addState(new Stop());
+        response+="Halting plotter";
         break;
       }
       case "move": {
@@ -121,9 +130,8 @@ public class Handler {
       }
       case "help": {
         response += "Thank you for using the helpline:\n\n";
-        response += "mode MODE - accepts 'stream' or 'download'\n"
-                + "  stream: receive commands one after the other.\n"
-                + "  download: receive commands all at once.\n";
+        response += "download RCODE - accepts list of rcode instructions separated by newlines.\n";
+        response += "stop - Attempts to immediately stop plotter.";
         response += "status - returns machine status.\n";
         response += "home\n";
         response += "pen_up\n";

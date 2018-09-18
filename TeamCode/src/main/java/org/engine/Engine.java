@@ -18,7 +18,8 @@ import java.util.ArrayList;
 public abstract class Engine extends OpMode {
 
   public static Engine instance;
-  public static Driver driver = null;
+  public static Driver driverStatic = null;
+  public Driver driver = null;
   //Array To Hold States
   public ArrayList<State> states = new ArrayList<>();
   public int activeStateIndex = 0;
@@ -34,6 +35,7 @@ public abstract class Engine extends OpMode {
     Engine.instance = this;
     try {
       driver = (Driver) Engine.instance;
+      driverStatic = (Driver) Engine.instance;
     } catch (ClassCastException err) {}
     //Call Set Processes to fill arrays with states
     setup();
@@ -61,26 +63,27 @@ public abstract class Engine extends OpMode {
       state = states.get(activeStateIndex);
     } catch (IndexOutOfBoundsException e) {
       if (driver == null) {
-        telemetry.addData("No state", "State at " + activeStateIndex + " is OutOfBounds");
+        telemetry.addData("[ENGINE] No state", "State at " + activeStateIndex + " is OutOfBounds");
         stop();
       } else {
-        telemetry.addData("Waiting...", "Awaiting state from server.");
+        telemetry.addData("[ENGINE] Waiting...", "Awaiting state from server.");
       }
     }
 
     if (state != null) {
       if (!state.getIsFinished()) {
-        telemetry.addData("Running State", "" + state.getClass());
+        telemetry.addData("[ENGINE] Running State", "" + state.getClass());
+        telemetry.addLine("[ENGINE] State "+activeStateIndex+1+" of "+states.size());
 
         state.exec();
         state.telemetry();
       } else {
-        telemetry.addData("Next", "State");
+        telemetry.addData("[ENGINE] Next", "State");
         activeStateIndex++;
         setupNextState();
       }
     } else {
-      telemetry.addData("NOTICE", "No active state!");
+      telemetry.addData("[ENGINE] NOTICE", "No active state!");
     }
 
     try {
