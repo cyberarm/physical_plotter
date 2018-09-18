@@ -106,6 +106,7 @@ public class Server {
       Log.i("DRIVER", "Server Stopped.");
       try {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 500);
+        try { sleep(500); } catch (InterruptedException e) {}
         toneGenerator.release();
       } catch (NullPointerException e) {
       } catch (RuntimeException e) {

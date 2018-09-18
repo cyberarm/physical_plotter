@@ -67,7 +67,7 @@ public class Handler {
       case "download": {
         Log.i("Handler", "Received 'download' command, processing...");
 
-        handleDownload(request);
+        response += handleDownload(request);
         break;
       }
       case "move": {
@@ -147,10 +147,11 @@ public class Handler {
     return response;
   }
 
-  private void handleDownload(String request) {
+  private String handleDownload(String request) {
     String substring = sub(request, "download");
     String[] list = substring.trim().split("\n");
     String bit;
+    int numberOfEvents = 0;
 
     for (int i = 0; i < list.length; i++) {
        bit = list[i].split(" ")[0];
@@ -158,11 +159,13 @@ public class Handler {
         case "pen_down": {
           Log.i("Handler", "download processed pen_down");
           Engine.instance.addState(new PenDown());
+          numberOfEvents++;
           break;
         }
         case "pen_up": {
           Log.i("Handler", "download processed pen_up");
           Engine.instance.addState(new PenUp());
+          numberOfEvents++;
           break;
         }
         case "move": {
@@ -173,6 +176,7 @@ public class Handler {
 
             ((Driver) Driver.instance).pendingWork = true;
             Engine.instance.addState(new Move(Integer.parseInt(localList[0]), Integer.parseInt(localList[1])));
+            numberOfEvents++;
           } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
           }
@@ -180,6 +184,7 @@ public class Handler {
         }
         case "home": {
           Log.i("Handler", "download processed home");
+          numberOfEvents++;
           Engine.instance.addState(new Home());
           break;
         }
@@ -189,6 +194,8 @@ public class Handler {
         }
       }
     }
+
+    return "Download processed "+numberOfEvents+" events";
   }
 
   public String encode(String string) {
