@@ -85,7 +85,7 @@ public abstract class Engine extends OpMode {
 
     try {
       if (states.get(activeStateIndex) != null && !states.get(activeStateIndex).getIsFinished()) {
-        if (driver.getClass() == Driver.class) {
+        if (driver != null && driver.getClass() == Driver.class) {
           try {
             if (states.get(activeStateIndex + 1) != null && states.get(activeStateIndex + 1).getClass() != Wait.class) {
               driver.pendingWork = true;
