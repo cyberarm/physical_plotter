@@ -72,7 +72,7 @@ public class RevRovingRobotControl extends State {
     engine.telemetry.addData("Green", colorSensor.green());
     engine.telemetry.addData("Blue", colorSensor.blue());
     engine.telemetry.addData("Alpha", colorSensor.alpha());
-    engine.telemetry.addData("Hue", colorSensor.argb());
+    engine.telemetry.addData("ARGB", colorSensor.argb());
   }
 
   @Override
