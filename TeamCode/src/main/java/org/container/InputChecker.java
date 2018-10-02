@@ -12,10 +12,13 @@ import java.util.HashMap;
 
 public class InputChecker {
   private Gamepad gamepad;
-  private HashMap<String, Boolean> buttons;
+  private HashMap<String, Byte> buttons;
   private ArrayList<String> buttonList;
-  public InputChecker(Gamepad _gamepad) {
-    gamepad = _gamepad;
+  private byte NULL    = 0,
+               PRESSED = 1,
+               RELEASED= 2;
+  public InputChecker(Gamepad gamepad) {
+    this.gamepad = gamepad;
     buttons = new HashMap<>();
     buttonList = new ArrayList<>();
 
@@ -31,13 +34,13 @@ public class InputChecker {
     for (int i = 0; i < buttonList.size(); i++) {
       try {
         Field field = gamepad.getClass().getDeclaredField(buttonList.get(i));
-        Gamepad g = new Gamepad();
 
-        if (field.getBoolean(g)) {
-          System.out.println("Button: "+ buttonList.get(i));
-          buttons.put(buttonList.get(i), true);
+        if (field.getBoolean(gamepad)) {
+          buttons.put(buttonList.get(i), PRESSED);
         } else {
-//          check(buttonList.get(i));
+          if (buttons.get(buttonList.get(i)) != null && buttons.get(buttonList.get(i)) == PRESSED) {
+            buttons.put(buttonList.get(i), RELEASED);
+          }
         }
       } catch (NoSuchFieldException|IllegalAccessException e) {
         e.printStackTrace();
@@ -47,10 +50,10 @@ public class InputChecker {
 
   public boolean check(String button) {
     boolean state = false;
-    if (buttons.containsKey(button) && buttons.get(button)) {
+    if (buttons.containsKey(button) && buttons.get(button) == RELEASED) {
       Log.d("InputChecker","button \""+button+"\" has been released on \"gamepad"+gamepad.getGamepadId()+"\"");
       state = true;
-      buttons.put(button, false);
+      buttons.put(button, NULL);
     }
     return state;
   }
