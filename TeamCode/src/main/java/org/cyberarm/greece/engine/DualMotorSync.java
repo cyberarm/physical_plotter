@@ -1,10 +1,12 @@
 package org.cyberarm.greece.engine;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name = "DualMotorSync")
+@Disabled
+//@TeleOp(name = "DualMotorSync")
 public class DualMotorSync extends OpMode {
     private DcMotor leftMotor, rightMotor;
 

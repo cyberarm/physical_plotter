@@ -1,5 +1,6 @@
 package org.cyberarm.greece.engine;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -7,7 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@TeleOp(name = "SameSpeed")
+@Disabled
+//@TeleOp(name = "SameSpeed")
 public class SameSpeed extends OpMode {
     private DcMotor leftMotor, rightMotor;
     private DigitalChannel button;

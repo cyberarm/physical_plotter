@@ -1,11 +1,13 @@
 package org.cyberarm.greece.engine;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "RampDriveV3")
+@Disabled
+//@TeleOp(name = "RampDriveV3")
 public class RampDriveV3 extends OpMode {
     private DcMotor motor;
     private long timeToRampMS = 5000;

@@ -2,12 +2,14 @@ package org.cyberarm.greece.engine;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "CyberarmRampedMotorV2")
+@Disabled
+//@TeleOp(name = "CyberarmRampedMotorV2")
 public class RampedDriveV2 extends OpMode {
     private DcMotor motor;
     private int encoderTravel = 10_000;
