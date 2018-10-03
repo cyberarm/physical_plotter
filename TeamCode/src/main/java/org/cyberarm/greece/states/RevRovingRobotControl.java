@@ -21,7 +21,10 @@ public class RevRovingRobotControl extends State {
   private double steeringKP = 0.5;
   private double drivePower;
 
-  private DistanceSensor laserDistanceSensor;
+  private DistanceSensor laserDistanceSensor0,
+                         laserDistanceSensor1,
+                         laserDistanceSensor2,
+                         laserDistanceSensor3;
   private ColorSensor colorSensor;
   private DistanceSensor hybridDistanceSensor;
 
@@ -33,10 +36,13 @@ public class RevRovingRobotControl extends State {
     steering   = engine.hardwareMap.servo.get("svSteering");
     inputChecker = new InputChecker(engine.gamepad1);
 
-    laserDistanceSensor = engine.hardwareMap.get(DistanceSensor.class, "distance");
+    laserDistanceSensor0 = engine.hardwareMap.get(DistanceSensor.class, "distance0");
+    laserDistanceSensor1 = engine.hardwareMap.get(DistanceSensor.class, "distance1");
+    laserDistanceSensor2 = engine.hardwareMap.get(DistanceSensor.class, "distance2");
+    laserDistanceSensor3 = engine.hardwareMap.get(DistanceSensor.class, "distance3");
 
-    hybridDistanceSensor = engine.hardwareMap.get(DistanceSensor.class, "colorSensor");
-    colorSensor = engine.hardwareMap.colorSensor.get("colorSensor");
+//    hybridDistanceSensor = engine.hardwareMap.get(DistanceSensor.class, "colorSensor");
+//    colorSensor = engine.hardwareMap.colorSensor.get("colorSensor");
   }
 
 
@@ -69,25 +75,10 @@ public class RevRovingRobotControl extends State {
     engine.telemetry.addData("Steering Position", steering.getPosition());
 
     engine.telemetry.addLine();
-    engine.telemetry.addData("Laser Distance Sensor", ""+laserDistanceSensor.getDistance(DistanceUnit.MM)+" MM");
-
-    engine.telemetry.addLine();
-    String distance = "Undefined";
-    String distanceString = String.format("%f", hybridDistanceSensor.getDistance(DistanceUnit.MM));
-    if (distanceString.contains("NaN")) {
-      distance = "Infinity";
-    } else {
-      distance = distanceString;
-    }
-    engine.telemetry.addData("Distance Sensor", ""+distance+" MM");
-
-    engine.telemetry.addLine();
-    engine.telemetry.addLine("Color Sensor");
-    engine.telemetry.addData("Red", colorSensor.red());
-    engine.telemetry.addData("Green", colorSensor.green());
-    engine.telemetry.addData("Blue", colorSensor.blue());
-    engine.telemetry.addData("Alpha", colorSensor.alpha());
-    engine.telemetry.addData("ARGB", colorSensor.argb());
+    engine.telemetry.addData("Laser Distance Sensor 0", ""+laserDistanceSensor0.getDistance(DistanceUnit.MM)+" MM");
+    engine.telemetry.addData("Laser Distance Sensor 1", ""+laserDistanceSensor1.getDistance(DistanceUnit.MM)+" MM");
+    engine.telemetry.addData("Laser Distance Sensor 2", ""+laserDistanceSensor2.getDistance(DistanceUnit.MM)+" MM");
+    engine.telemetry.addData("Laser Distance Sensor 3", ""+laserDistanceSensor3.getDistance(DistanceUnit.MM)+" MM");
   }
 
   @Override
