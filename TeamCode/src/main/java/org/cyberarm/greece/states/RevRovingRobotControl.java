@@ -24,8 +24,6 @@ public class RevRovingRobotControl extends CyberarmState {
                          laserDistanceSensor1,
                          laserDistanceSensor2,
                          laserDistanceSensor3;
-  private ColorSensor colorSensor;
-  private DistanceSensor hybridDistanceSensor;
 
   public RevRovingRobotControl() {
     leftDrive  = cyberarmEngine.hardwareMap.dcMotor.get("leftDrive");
@@ -39,11 +37,24 @@ public class RevRovingRobotControl extends CyberarmState {
     laserDistanceSensor1 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance1");
     laserDistanceSensor2 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance2");
     laserDistanceSensor3 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance3");
-
-//    hybridDistanceSensor = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "colorSensor");
-//    colorSensor = cyberarmEngine.hardwareMap.colorSensor.get("colorSensor");
   }
 
+  public boolean getDistances(double distance) {
+    int sensors = 0;
+
+    if (mmDistance(laserDistanceSensor0) > distance)  { sensors++;}
+    if (mmDistance(laserDistanceSensor1) > distance)  { sensors++;}
+    if (mmDistance(laserDistanceSensor2) > distance)  { sensors++;}
+    if (mmDistance(laserDistanceSensor3) > distance)  { sensors++;}
+
+    if (sensors == 4) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public double mmDistance(DistanceSensor sensor) { return sensor.getDistance(DistanceUnit.MM); }
 
   @Override
   public void exec() {
@@ -62,6 +73,12 @@ public class RevRovingRobotControl extends CyberarmState {
     }
 
     speedKP = Range.clip(speedKP, 0.1, 1.0);
+
+    averageSensors();
+  }
+
+  private void averageSensors() {
+
   }
 
   @Override
