@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 
 public class Motor extends AbstractMotor {
   private DcMotor motor;
@@ -57,8 +57,8 @@ public class Motor extends AbstractMotor {
 //      }
 //    }
 //
-//    Engine.instance.telemetry.addData("Motor "+getDeviceName()+" Faults", fault);
-//    Engine.instance.telemetry.addData("Motor "+getDeviceName()+" Fault Threshold", faultThreshold);
+//    CyberarmEngine.instance.telemetry.addData("Motor "+getDeviceName()+" Faults", fault);
+//    CyberarmEngine.instance.telemetry.addData("Motor "+getDeviceName()+" Fault Threshold", faultThreshold);
 //  }
 
   protected void faultCheck() {
@@ -95,8 +95,8 @@ public class Motor extends AbstractMotor {
       }
     }
 
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
+    CyberarmEngine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
+    CyberarmEngine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
   }
 
   public double velocity() {

@@ -4,25 +4,24 @@ import android.media.ToneGenerator;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 
-import org.cyberarm.driver.Driver;
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 import org.cyberarm.greece.statues.AbstractMotor;
 import org.cyberarm.greece.statues.Motor;
 
-public class Stop extends State {
+public class Stop extends CyberarmState {
   private AbstractMotor xAxis, yAxis;
   private CRServo svPen;
   private long lastToneMs = 0;
 
   public Stop() {
-    if (engine.driver.offlineDebugging) {
-      xAxis = (engine.driver.xAxisV);
-      yAxis = (engine.driver.yAxisV);
+    if (cyberarmEngine.driver.offlineDebugging) {
+      xAxis = (cyberarmEngine.driver.xAxisV);
+      yAxis = (cyberarmEngine.driver.yAxisV);
     } else {
-      xAxis = new Motor(engine.hardwareMap.dcMotor.get("xAxis"));
-      yAxis = new Motor(engine.hardwareMap.dcMotor.get("yAxis"));
+      xAxis = new Motor(cyberarmEngine.hardwareMap.dcMotor.get("xAxis"));
+      yAxis = new Motor(cyberarmEngine.hardwareMap.dcMotor.get("yAxis"));
     }
-    svPen = engine.hardwareMap.crservo.get("svPen");
+    svPen = cyberarmEngine.hardwareMap.crservo.get("svPen");
   }
 
   @Override
@@ -32,7 +31,7 @@ public class Stop extends State {
     svPen.setPower(0);
 
     if (System.currentTimeMillis()-lastToneMs > 500) {
-      engine.driver.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD);
+      cyberarmEngine.driver.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD);
       lastToneMs = System.currentTimeMillis()+500;
     }
 
@@ -41,17 +40,17 @@ public class Stop extends State {
 
   @Override
   public void telemetry() {
-    engine.telemetry.addLine("STOP STOP STOP");
+    cyberarmEngine.telemetry.addLine("STOP STOP STOP");
 
-    engine.telemetry.addLine();
+    cyberarmEngine.telemetry.addLine();
 
-    engine.telemetry.addLine("Plotter has been stopped");
-    engine.telemetry.addData("xAxis", xAxis.getPower());
-    engine.telemetry.addData("yAxis", yAxis.getPower());
-    engine.telemetry.addData("svPen", svPen.getPower());
+    cyberarmEngine.telemetry.addLine("Plotter has been stopped");
+    cyberarmEngine.telemetry.addData("xAxis", xAxis.getPower());
+    cyberarmEngine.telemetry.addData("yAxis", yAxis.getPower());
+    cyberarmEngine.telemetry.addData("svPen", svPen.getPower());
 
-    engine.telemetry.addLine();
+    cyberarmEngine.telemetry.addLine();
 
-    engine.telemetry.addLine("STOP STOP STOP");
+    cyberarmEngine.telemetry.addLine("STOP STOP STOP");
   }
 }

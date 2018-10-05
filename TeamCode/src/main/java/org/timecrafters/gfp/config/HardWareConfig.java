@@ -85,11 +85,11 @@ public class HardWareConfig  extends State{
         dcArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         dcArm.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        //winchTouch = engine.hardwareMap.touchSensor.get("winchTouch");
+        //winchTouch = cyberarmEngine.hardwareMap.touchSensor.get("winchTouch");
         flipperTouch = engine.hardwareMap.touchSensor.get("flipperTouch");
         beamTouch = engine.hardwareMap.touchSensor.get("beamTouch");
 
-        //frontRightDistanceSensor = engine.hardwareMap.get(ModernRoboticsI2cRangeSensor.class,
+        //frontRightDistanceSensor = cyberarmEngine.hardwareMap.get(ModernRoboticsI2cRangeSensor.class,
         //        "frontRightDistanceSensor");
 
         colorSensor = engine.hardwareMap.colorSensor.get("colorSensor");

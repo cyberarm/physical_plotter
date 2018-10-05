@@ -1,10 +1,8 @@
 package org.cyberarm.greece.statues;
 
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.util.Log;
 
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 
 public class VirtualDCMotor extends AbstractMotor {
 
@@ -73,13 +71,13 @@ public class VirtualDCMotor extends AbstractMotor {
       }
     }
 
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
-    Engine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
+    CyberarmEngine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Faults", fault);
+    CyberarmEngine.instance.telemetry.addData(""+this.getClass()+" "+getDeviceName()+" Fault Threshold", faultThreshold);
   }
 
   private void simulateMotor() {
     long time = System.currentTimeMillis() - lastUpdateMs;
-    Engine.instance.telemetry.addData("VirtualDCMotor "+getDeviceName()+" Time Difference", time);
+    CyberarmEngine.instance.telemetry.addData("VirtualDCMotor "+getDeviceName()+" Time Difference", time);
 
     if (shouldStall()) {
       playErrorTone();

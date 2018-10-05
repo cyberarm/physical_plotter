@@ -95,7 +95,7 @@ public abstract class UnstableEngine extends OpMode {
                 }
                 opFininished = false;
                 currentProcess = x;
-                Log.i(TAG, "Started State : " + Integer.toString(x));
+                Log.i(TAG, "Started CyberarmState : " + Integer.toString(x));
 
 
             } else if (processes.get(x).get(0) == null && !machineFinished) {
@@ -132,7 +132,7 @@ public abstract class UnstableEngine extends OpMode {
         return x;
     }
 
-    //adds the ability to add processes inside states
+    //adds the ability to add processes inside cyberarmStates
     public void addInLineProcess(State state,boolean init) {
         for(int i = 0; i < processes.size();i ++){
             if(processes.get(x).get(i) == null || processes.get(x).get(i).getIsFinished()){
@@ -149,7 +149,7 @@ public abstract class UnstableEngine extends OpMode {
 
     }
 
-    //Allows other states to end processes on the same index
+    //Allows other cyberarmStates to end processes on the same index
     private void endProcess(int index, State state) {
         for (int i = 0; i < processes.size(); i++) {
             if (processes.get(index).get(i) == state) {

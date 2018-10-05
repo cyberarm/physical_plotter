@@ -6,25 +6,17 @@ import android.media.ToneGenerator;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.cyberarm.driver.states.BaseMover;
-import org.cyberarm.driver.states.Home;
-import org.cyberarm.driver.states.PenDown;
-import org.cyberarm.driver.states.PenUp;
-import org.cyberarm.driver.states.Wait;
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 import org.cyberarm.engine.Support;
 import org.cyberarm.greece.statues.VirtualDCMotor;
 import org.cyberarm.plotter.Decompiler;
-import org.cyberarm.plotter.Event;
 import org.cyberarm.plotter.TCPServer.Server;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.util.ArrayList;
 
 
 @TeleOp(name = "Plotter Driver")
-public class Driver extends Engine {
+public class Driver extends CyberarmEngine {
   Decompiler decompiler;
   public Server server;
   public boolean pendingWork = false;
@@ -37,8 +29,8 @@ public class Driver extends Engine {
   public Driver() {
     Driver.instance = this;
     try {
-      driver = (Driver) Engine.instance;
-      driverStatic = (Driver) Engine.instance;
+      driver = (Driver) CyberarmEngine.instance;
+      driverStatic = (Driver) CyberarmEngine.instance;
     } catch (ClassCastException err) {}
 
     this.toneGenerator = new ToneGenerator(AudioManager.STREAM_ALARM, 50);

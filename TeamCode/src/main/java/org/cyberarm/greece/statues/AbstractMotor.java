@@ -1,12 +1,8 @@
 package org.cyberarm.greece.statues;
 
-import android.media.AudioManager;
 import android.media.ToneGenerator;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.cyberarm.driver.Driver;
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 
 public abstract class AbstractMotor {
   protected String name;
@@ -28,7 +24,7 @@ public abstract class AbstractMotor {
   protected int fuzz = 10; // Used to pad encoder position checks (POSITION == TARGET_POSITION +/- fuzz)
 
 
-  protected ToneGenerator toneGenerator = Engine.driverStatic.toneGenerator;
+  protected ToneGenerator toneGenerator = CyberarmEngine.driverStatic.toneGenerator;
   protected long toneGeneratorStartedAt;
 
 

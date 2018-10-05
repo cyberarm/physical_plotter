@@ -65,10 +65,10 @@ public abstract class Engine extends OpMode {
 
     //sets processes
     public void init() {
-        //Call Set Processes to fill arrays with states
+        //Call Set Processes to fill arrays with cyberarmStates
         setProcesses();
 
-        //Loop through to processes array and initialize states
+        //Loop through to processes array and initialize cyberarmStates
         for (int i = 0; i < processes.length; i++) {
             for (int y = 0; y < processes.length; y++) {
                 if (processes[i][y] != null) {
@@ -94,11 +94,11 @@ public abstract class Engine extends OpMode {
     //checks if ops are finished
     public void loop() {
 
-        //check if we are checking states
+        //check if we are checking cyberarmStates
         if(checkingStates) {
             checkStateFinished();
 
-        //Check if we are checking states inside sub engines
+        //Check if we are checking cyberarmStates inside sub engines
         }else{
 
             //Run evaluate on sub engines
@@ -111,13 +111,13 @@ public abstract class Engine extends OpMode {
 
             }
 
-            //Check if sub engine is runnable
+            //Check if sub cyberarmEngine is runnable
             if(subEngines[processIndex].isRunable()) {
 
                 //check sub engines
                 checkSubEngines();
             }else{
-                //if engine is not runnable than incrament processIndex and switch to "checking states"
+                //if cyberarmEngine is not runnable than incrament processIndex and switch to "checking cyberarmStates"
                 Log.i(TAG, "SUB ENGINE NOT RUNNABLE : " + "[" + Integer.toString(processIndex) + "]" + "[0]");
                 checkingStates = true;
                 processIndex++;
@@ -129,7 +129,7 @@ public abstract class Engine extends OpMode {
     //kills all processes running when program endes
     @Override
     public void stop() {
-        //end all states
+        //end all cyberarmStates
         for (int x = 0; x < processes.length; x++) {
             for (int y = 0; y < processes.length; y++) {
                 if (processes[x][y] != null) {
@@ -166,6 +166,13 @@ public abstract class Engine extends OpMode {
 
         //check to make sure the current state or whole machine isnt finished
         if (!opFinished && !machineFinished) {
+            for (int x = 0; x < processes.length; x++) {
+                for (int y = 0; y < processes[x].length; y++) {
+                    if (processes[x][y] != null && !processes[x][y].getIsFinished()) {
+                        processes[x][y].telemetry();
+                    }
+                }
+            }
 
             //Loop through to check if all sections of the current
             // state are finished, if so set opFinsished to true
@@ -197,7 +204,7 @@ public abstract class Engine extends OpMode {
                     threads[i].start();
                 }
                 opFinished = false;
-                Log.i(TAG, "Started State : " + Integer.toString(processIndex));
+                Log.i(TAG, "Started CyberarmState : " + Integer.toString(processIndex));
 
 
             }else if(subEngines[processIndex] != null){
@@ -217,7 +224,7 @@ public abstract class Engine extends OpMode {
 
         // Check if sub engines need to be initialized
         if(!isSubEngineinit){
-            //Run set Proccesses on the sub engine
+            //Run set Proccesses on the sub cyberarmEngine
             subEngines[processIndex].setProcesses();
 
             if(!subEngines[processIndex].isPreInit()) {
@@ -246,7 +253,7 @@ public abstract class Engine extends OpMode {
         return processIndex;
     }
 
-    //adds the ability to add processes inside states
+    //adds the ability to add processes inside cyberarmStates
     public void addInLineProcess(State state,boolean init) {
         for(int i = 0; i < processes.length;i ++){
             if(processes[processIndex][i] == null || processes[processIndex][i].getIsFinished()){
@@ -263,7 +270,7 @@ public abstract class Engine extends OpMode {
 
     }
 
-    //For adding states when setProcesses is called
+    //For adding cyberarmStates when setProcesses is called
     public void addState(State state){
 
         processesY = 0;

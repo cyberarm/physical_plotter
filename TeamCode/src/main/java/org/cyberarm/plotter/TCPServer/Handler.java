@@ -10,7 +10,7 @@ import org.cyberarm.driver.states.Move;
 import org.cyberarm.driver.states.PenDown;
 import org.cyberarm.driver.states.PenUp;
 import org.cyberarm.driver.states.Stop;
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -73,9 +73,9 @@ public class Handler {
       }
       case "stop": {
         Log.i("Handler", "Halting plotter!");
-        Engine.instance.states.clear();
-        Engine.instance.activeStateIndex = 0;
-        Engine.instance.addState(new Stop());
+        CyberarmEngine.instance.cyberarmStates.clear();
+        CyberarmEngine.instance.activeStateIndex = 0;
+        CyberarmEngine.instance.addState(new Stop());
         response+="Halting plotter";
         break;
       }
@@ -85,7 +85,7 @@ public class Handler {
           String[] list = substring.trim().split(":");
           response += "Moving to x: " + list[0] + ", y: " + list[1];
           ((Driver) Driver.instance).pendingWork = true;
-          Engine.instance.addState(new Move(Integer.parseInt(list[0]), Integer.parseInt(list[1])));
+          CyberarmEngine.instance.addState(new Move(Integer.parseInt(list[0]), Integer.parseInt(list[1])));
         } catch (ArrayIndexOutOfBoundsException e) {
           response+="ERROR: malformed string: "+request;
           e.printStackTrace();
@@ -95,33 +95,33 @@ public class Handler {
       case "home": {
         response += "Homing to 0:0";
         ((Driver) Driver.instance).pendingWork = true;
-        Engine.instance.addState(new Home());
+        CyberarmEngine.instance.addState(new Home());
         break;
       }
       case "pen_up": {
         response += "Raised Pen";
         ((Driver) Driver.instance).pendingWork = true;
-        Engine.instance.addState(new PenUp());
+        CyberarmEngine.instance.addState(new PenUp());
         break;
       }
       case "pen_down": {
         response += "Lowered Pen";
         ((Driver) Driver.instance).pendingWork = true;
-        Engine.instance.addState(new PenDown());
+        CyberarmEngine.instance.addState(new PenDown());
         break;
       }
       case "status": {
         response += "TIME:" + System.currentTimeMillis() + "\n";
-        response += "PEN: "+ Engine.instance.hardwareMap.crservo.get("svPen").getPower()+"\n";
+        response += "PEN: "+ CyberarmEngine.instance.hardwareMap.crservo.get("svPen").getPower()+"\n";
         if (((Driver) Driver.instance).offlineDebugging) {
           response += "X: " + ((Driver) Driver.instance).xAxisV.getCurrentPosition() + "\n";
           response += "Y: " + ((Driver) Driver.instance).yAxisV.getCurrentPosition() + "\n";
         } else {
-          response += "X: " + Engine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition() + "\n";
-          response += "Y: " + Engine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition() + "\n";
+          response += "X: " + CyberarmEngine.instance.hardwareMap.dcMotor.get("xAxis").getCurrentPosition() + "\n";
+          response += "Y: " + CyberarmEngine.instance.hardwareMap.dcMotor.get("yAxis").getCurrentPosition() + "\n";
         }
-        response += "X_ENDSTOP: "+Engine.instance.hardwareMap.touchSensor.get("xAxisEndStop").isPressed()+"\n";
-        response += "Y_ENDSTOP: "+Engine.instance.hardwareMap.touchSensor.get("yAxisEndStop").isPressed()+"\n";
+        response += "X_ENDSTOP: "+CyberarmEngine.instance.hardwareMap.touchSensor.get("xAxisEndStop").isPressed()+"\n";
+        response += "Y_ENDSTOP: "+CyberarmEngine.instance.hardwareMap.touchSensor.get("yAxisEndStop").isPressed()+"\n";
         break;
       }
       case "00000000": {
@@ -166,13 +166,13 @@ public class Handler {
       switch (bit) {
         case "pen_down": {
           Log.i("Handler", "download processed pen_down");
-          Engine.instance.addState(new PenDown());
+          CyberarmEngine.instance.addState(new PenDown());
           numberOfEvents++;
           break;
         }
         case "pen_up": {
           Log.i("Handler", "download processed pen_up");
-          Engine.instance.addState(new PenUp());
+          CyberarmEngine.instance.addState(new PenUp());
           numberOfEvents++;
           break;
         }
@@ -183,7 +183,7 @@ public class Handler {
             String[] localList = localSubstring.trim().split(":");
 
             ((Driver) Driver.instance).pendingWork = true;
-            Engine.instance.addState(new Move(Integer.parseInt(localList[0]), Integer.parseInt(localList[1])));
+            CyberarmEngine.instance.addState(new Move(Integer.parseInt(localList[0]), Integer.parseInt(localList[1])));
             numberOfEvents++;
           } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -193,7 +193,7 @@ public class Handler {
         case "home": {
           Log.i("Handler", "download processed home");
           numberOfEvents++;
-          Engine.instance.addState(new Home());
+          CyberarmEngine.instance.addState(new Home());
           break;
         }
         default: {

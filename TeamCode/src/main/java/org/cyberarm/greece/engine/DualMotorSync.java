@@ -24,7 +24,7 @@ public class DualMotorSync extends OpMode {
 //    public DualMotorSync(double motorPower, int biasedMotor) {
 ////        this.motorPower = motorPower;
 ////        this.biasedMotor = biasedMotor;
-////        this.engine = this;
+////        this.cyberarmEngine = this;
 //        // Biased motor?
 //        /*
 //            The biased motor is the one who's speed is known and that the unbiased motor tries to match.
