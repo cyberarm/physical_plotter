@@ -5,12 +5,12 @@ import android.util.Log;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 import org.cyberarm.engine.Support;
 
 import java.util.HashMap;
 
-public class BaseMover extends State {
+public class BaseMover extends CyberarmState {
   DcMotor xAxis, yAxis;
   TouchSensor xAxisEndStop, yAxisEndStop;
 
@@ -34,11 +34,11 @@ public class BaseMover extends State {
     targetX = x;
     targetY = y;
 
-    xAxis = engine.hardwareMap.dcMotor.get("xAxis");
-    yAxis = engine.hardwareMap.dcMotor.get("yAxis");
+    xAxis = cyberarmEngine.hardwareMap.dcMotor.get("xAxis");
+    yAxis = cyberarmEngine.hardwareMap.dcMotor.get("yAxis");
 
-    xAxisEndStop = engine.hardwareMap.touchSensor.get("xAxisEndStop");
-    yAxisEndStop = engine.hardwareMap.touchSensor.get("yAxisEndStop");
+    xAxisEndStop = cyberarmEngine.hardwareMap.touchSensor.get("xAxisEndStop");
+    yAxisEndStop = cyberarmEngine.hardwareMap.touchSensor.get("yAxisEndStop");
 
     xAxis.setPower(0);
     yAxis.setPower(0);
@@ -56,8 +56,8 @@ public class BaseMover extends State {
 
   @Override
   public void exec() {
-    engine.telemetry.addData("Event", this.getClass());
-    engine.telemetry.addData("yAxis", "" + yAxis.getCurrentPosition());
+    cyberarmEngine.telemetry.addData("Event", this.getClass());
+    cyberarmEngine.telemetry.addData("yAxis", "" + yAxis.getCurrentPosition());
 
     if (!setupCompleted) {
       Support.puts("BaseMover", "Moving pen to " + localX + ":" + localY + "...");
@@ -72,7 +72,7 @@ public class BaseMover extends State {
       if (checkEndStop("xAxisEndStop", xAxisEndStop)) {
         xAxis.setPower(0.0);
         encoderData.put("x_axis_endstop_activated", true);
-        engine.telemetry.addData("End Stop", "X Axis endstop triggered.");
+        cyberarmEngine.telemetry.addData("End Stop", "X Axis endstop triggered.");
       } else {
         if ((boolean) encoderData.get("x_axis_endstop_activated") != true) {
           xAxis.setPower(-0.1);
@@ -82,7 +82,7 @@ public class BaseMover extends State {
       if (checkEndStop("yAxisEndStop", yAxisEndStop)) {
         yAxis.setPower(0.0);
         encoderData.put("y_axis_endstop_activated", true);
-        engine.telemetry.addData("End Stop", "Y Axis endstop triggered.");
+        cyberarmEngine.telemetry.addData("End Stop", "Y Axis endstop triggered.");
       } else {
         if ((boolean) encoderData.get("y_axis_endstop_activated") != true) {
           yAxis.setPower(-0.1); // CAUTION: THIS IS A BUG RISK. (Might be resolved.)
@@ -121,7 +121,7 @@ public class BaseMover extends State {
       }
     }
 
-    engine.telemetry.update();
+    cyberarmEngine.telemetry.update();
   }
 
   @Override
@@ -174,21 +174,21 @@ public class BaseMover extends State {
   private void resolve(String name, int resolver) {
     if (resolver == ABORT) {
 //            throw new RuntimeException("Encoder on "+name+" is broken or the motor is stalled!");
-      engine.telemetry.addData("Error", "Encoder on " + name + " is broken or the motor is stalled!" + engine.getRuntime());
+      cyberarmEngine.telemetry.addData("Error", "Encoder on " + name + " is broken or the motor is stalled!" + cyberarmEngine.getRuntime());
 //      setFinished(true);
-//      engine.stop();
+//      cyberarmEngine.stop();
 
     } else if (resolver == HALT_MOTOR) {
-      engine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Halting Motor.");
-      engine.hardwareMap.dcMotor.get(name).setPower(0.0);
+      cyberarmEngine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Halting Motor.");
+      cyberarmEngine.hardwareMap.dcMotor.get(name).setPower(0.0);
 
     } else if (resolver == SKIP) {
-      engine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Skipping.");
+      cyberarmEngine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Skipping.");
       Support.puts("BaseMover", "Encoder or motor error on " + name + "! Skipping.");
       setFinished(true);
 
     } else if (resolver == IGNORE) {
-      engine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Ignoring.");
+      cyberarmEngine.telemetry.addData("Error", "Encoder or motor error on " + name + "! Ignoring.");
       // Do nothing but watch the world burn.
     } else {
       Support.puts("BaseMover", "Unknown resolver: " + resolver);

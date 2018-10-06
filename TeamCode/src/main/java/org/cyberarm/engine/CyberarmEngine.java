@@ -15,13 +15,13 @@ import java.util.ArrayList;
  * First successful test was 5:00 6 thur oct 2016
  */
 
-public abstract class Engine extends OpMode {
+public abstract class CyberarmEngine extends OpMode {
 
-  public static Engine instance;
+  public static CyberarmEngine instance;
   public static Driver driverStatic = null;
   public Driver driver = null;
   //Array To Hold States
-  public ArrayList<State> states = new ArrayList<>();
+  public ArrayList<CyberarmState> cyberarmStates = new ArrayList<>();
   public int activeStateIndex = 0;
 
 
@@ -30,64 +30,64 @@ public abstract class Engine extends OpMode {
 
   private static String TAG = "PROGRAM.ENGINE: ";
 
-  //sets states
+  //sets cyberarmStates
   public void init() {
-    Engine.instance = this;
+    CyberarmEngine.instance = this;
 
-    //Call Set Processes to fill arrays with states
+    //Call Set Processes to fill arrays with cyberarmStates
     setup();
 
-    //Loop through states array and initialize states
-    for (int i = 0; i < states.size(); i++) {
-      if (states.get(i) != null) {
-        states.get(i).init();
+    //Loop through cyberarmStates array and initialize cyberarmStates
+    for (int i = 0; i < cyberarmStates.size(); i++) {
+      if (cyberarmStates.get(i) != null) {
+        cyberarmStates.get(i).init();
       }
     }
   }
 
   public void start() {
-    for (int i = 0; i < states.size(); i++) {
-      if (states.get(i) != null) {
-        states.get(i).start();
+    for (int i = 0; i < cyberarmStates.size(); i++) {
+      if (cyberarmStates.get(i) != null) {
+        cyberarmStates.get(i).start();
       }
     }
   }
 
   //checks if ops are finished
   public void loop() {
-    State state = null;
+    CyberarmState cyberarmState = null;
     try {
-      state = states.get(activeStateIndex);
+      cyberarmState = cyberarmStates.get(activeStateIndex);
     } catch (IndexOutOfBoundsException e) {
       if (driver == null) {
-        telemetry.addData("[ENGINE] No state", "State at " + activeStateIndex + " is OutOfBounds");
+        telemetry.addData("[ENGINE] No cyberarmState", "CyberarmState at " + activeStateIndex + " is OutOfBounds");
         stop();
       } else {
-        telemetry.addData("[ENGINE] Waiting...", "Awaiting state from server.");
+        telemetry.addData("[ENGINE] Waiting...", "Awaiting cyberarmState from server.");
       }
     }
 
-    if (state != null) {
-      if (!state.getIsFinished()) {
-        telemetry.addData("[ENGINE] Running State", "" + state.getClass());
-        telemetry.addLine("[ENGINE] State "+activeStateIndex+" of "+states.size());
+    if (cyberarmState != null) {
+      if (!cyberarmState.getIsFinished()) {
+        telemetry.addData("[ENGINE] Running CyberarmState", "" + cyberarmState.getClass());
+        telemetry.addLine("[ENGINE] CyberarmState "+activeStateIndex+" of "+ cyberarmStates.size());
 
-        state.exec();
-        state.telemetry();
+        cyberarmState.exec();
+        cyberarmState.telemetry();
       } else {
-        telemetry.addData("[ENGINE] Next", "State");
+        telemetry.addData("[ENGINE] Next", "CyberarmState");
         activeStateIndex++;
         setupNextState();
       }
     } else {
-      telemetry.addData("[ENGINE] NOTICE", "No active state!");
+      telemetry.addData("[ENGINE] NOTICE", "No active cyberarmState!");
     }
 
     try {
-      if (states.get(activeStateIndex) != null && !states.get(activeStateIndex).getIsFinished()) {
+      if (cyberarmStates.get(activeStateIndex) != null && !cyberarmStates.get(activeStateIndex).getIsFinished()) {
         if (driver != null && driver.getClass() == Driver.class) {
           try {
-            if (states.get(activeStateIndex + 1) != null && states.get(activeStateIndex + 1).getClass() != Wait.class) {
+            if (cyberarmStates.get(activeStateIndex + 1) != null && cyberarmStates.get(activeStateIndex + 1).getClass() != Wait.class) {
               driver.pendingWork = true;
             } else {
 
@@ -104,17 +104,17 @@ public abstract class Engine extends OpMode {
 
   private void setupNextState() {
     try {
-      states.get(activeStateIndex).init();
+      cyberarmStates.get(activeStateIndex).init();
     } catch (IndexOutOfBoundsException e) {
       Log.i(TAG, "No state at " + activeStateIndex);
     }
   }
 
-  //kills all states running when program endes
+  //kills all cyberarmStates running when program endes
   @Override
   public void stop() {
-    for (int i = 0; i < states.size(); i++) {
-      states.get(i).stop();
+    for (int i = 0; i < cyberarmStates.size(); i++) {
+      cyberarmStates.get(i).stop();
     }
 
     // Dump server shutdown into a thread because the FTC stop() times out REALLY fast.
@@ -138,12 +138,12 @@ public abstract class Engine extends OpMode {
 
   }
 
-  //set states in extended classes
+  //set cyberarmStates in extended classes
   public abstract void setup();
 
-  //For adding states when setup is called
-  public void addState(State state) {
-    Log.i(TAG, "Adding state "+state.getClass());
-    states.add(state);
+  //For adding cyberarmStates when setup is called
+  public void addState(CyberarmState cyberarmState) {
+    Log.i(TAG, "Adding cyberarmState "+ cyberarmState.getClass());
+    cyberarmStates.add(cyberarmState);
   }
 }

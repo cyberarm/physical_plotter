@@ -1,16 +1,14 @@
 package org.cyberarm.driver.states;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.cyberarm.driver.Driver;
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 import org.cyberarm.greece.statues.AbstractMotor;
 import org.cyberarm.greece.statues.EndStop;
 import org.cyberarm.greece.statues.Motor;
 
-public class Move extends State {
+public class Move extends CyberarmState {
   private AbstractMotor xAxis, yAxis;
   private EndStop xAxisEndStop, yAxisEndStop;
   private int xTarget, yTarget;
@@ -25,16 +23,16 @@ public class Move extends State {
     xTarget = x;
     yTarget = y;
 
-    svPen = engine.hardwareMap.crservo.get("svPen");
+    svPen = cyberarmEngine.hardwareMap.crservo.get("svPen");
     if (((Driver) Driver.instance).offlineDebugging) {
       xAxis = (((Driver) Driver.instance).xAxisV);
       yAxis = (((Driver) Driver.instance).yAxisV);
     } else {
-      xAxis = new Motor(engine.hardwareMap.dcMotor.get("xAxis"));
-      yAxis = new Motor(engine.hardwareMap.dcMotor.get("yAxis"));
+      xAxis = new Motor(cyberarmEngine.hardwareMap.dcMotor.get("xAxis"));
+      yAxis = new Motor(cyberarmEngine.hardwareMap.dcMotor.get("yAxis"));
     }
-    xAxisEndStop = new EndStop(engine.hardwareMap.touchSensor.get("xAxisEndStop"));
-    yAxisEndStop = new EndStop(engine.hardwareMap.touchSensor.get("yAxisEndStop"));
+    xAxisEndStop = new EndStop(cyberarmEngine.hardwareMap.touchSensor.get("xAxisEndStop"));
+    yAxisEndStop = new EndStop(cyberarmEngine.hardwareMap.touchSensor.get("yAxisEndStop"));
   }
 
   @Override
@@ -106,24 +104,24 @@ public class Move extends State {
 
   @Override
   public void telemetry() {
-    engine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
-    engine.telemetry.addData("Time", engine.getRuntime());
-    engine.telemetry.addData("xAxis", "X: " + xAxis.position() + " Target X: " + xTarget);
-    engine.telemetry.addData("yAxis", "Y: " + yAxis.position() + " Target Y: " + yTarget);
+    cyberarmEngine.telemetry.addLine("MOVE: X: " + xTarget + " Y: " + yTarget);
+    cyberarmEngine.telemetry.addData("Time", cyberarmEngine.getRuntime());
+    cyberarmEngine.telemetry.addData("xAxis", "X: " + xAxis.position() + " Target X: " + xTarget);
+    cyberarmEngine.telemetry.addData("yAxis", "Y: " + yAxis.position() + " Target Y: " + yTarget);
 
-    engine.telemetry.addData("xAxis hasUpdatedBefore", xAxis.hasUpdatedBefore);
-    engine.telemetry.addData("yAxis hasUpdatedBefore", yAxis.hasUpdatedBefore);
+    cyberarmEngine.telemetry.addData("xAxis hasUpdatedBefore", xAxis.hasUpdatedBefore);
+    cyberarmEngine.telemetry.addData("yAxis hasUpdatedBefore", yAxis.hasUpdatedBefore);
 
-    engine.telemetry.addData("xAxisMoved", xAxisMoved);
-    engine.telemetry.addData("yAxisMoved", yAxisMoved);
+    cyberarmEngine.telemetry.addData("xAxisMoved", xAxisMoved);
+    cyberarmEngine.telemetry.addData("yAxisMoved", yAxisMoved);
 
-    engine.telemetry.addData("xAxis Power", xAxis.getPower());
-    engine.telemetry.addData("yAxis Power", yAxis.getPower());
+    cyberarmEngine.telemetry.addData("xAxis Power", xAxis.getPower());
+    cyberarmEngine.telemetry.addData("yAxis Power", yAxis.getPower());
 
-    engine.telemetry.addData("xAxis Stalled", xAxis.stalled());
-    engine.telemetry.addData("yAxis Stalled", yAxis.stalled());
+    cyberarmEngine.telemetry.addData("xAxis Stalled", xAxis.stalled());
+    cyberarmEngine.telemetry.addData("yAxis Stalled", yAxis.stalled());
 
-    engine.telemetry.addData("xAxis Endstop", xAxisEndStop.triggered());
-    engine.telemetry.addData("yAxis Endstop", yAxisEndStop.triggered());
+    cyberarmEngine.telemetry.addData("xAxis Endstop", xAxisEndStop.triggered());
+    cyberarmEngine.telemetry.addData("yAxis Endstop", yAxisEndStop.triggered());
   }
 }

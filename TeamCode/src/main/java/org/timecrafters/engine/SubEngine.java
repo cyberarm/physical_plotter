@@ -76,7 +76,7 @@ public abstract class SubEngine {
                     threads[i].start();
                 }
                 opFininished = false;
-                Log.i(TAG, "Started State : " + Integer.toString(currentX));
+                Log.i(TAG, "Started CyberarmState : " + Integer.toString(currentX));
 
 
             }else if (processes[currentX][0] == null && !machineFinished) {

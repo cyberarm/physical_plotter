@@ -11,14 +11,14 @@ import java.util.Date;
  */
 
 
-public abstract class State implements Runnable {
+public abstract class CyberarmState implements Runnable {
 
   private DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:ms");
   private Date date = new Date();
   private volatile boolean isFinished = false;
   private byte layer = 0;
   public static String TAG = "PROGRAM.STATE";
-  public Engine engine = Engine.instance;
+  public CyberarmEngine cyberarmEngine = CyberarmEngine.instance;
   private long toneGeneratorStartedAt = 0;
 
 
@@ -50,9 +50,9 @@ public abstract class State implements Runnable {
   }
 
   public void playErrorTone() {
-    if (engine.driver != null) {
+    if (cyberarmEngine.driver != null) {
       if (System.currentTimeMillis() - toneGeneratorStartedAt > 200) {
-        engine.driver.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+        cyberarmEngine.driver.toneGenerator.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
         toneGeneratorStartedAt = System.currentTimeMillis();
       }
     }

@@ -36,6 +36,12 @@ public abstract class State implements Runnable  {
         }
     }
 
+    public void telemetry() {
+        /*
+            Override and place telemetry instructions in here
+         */
+    }
+
     public void stop(){
         /*
         * Override this and put your ending crap in here

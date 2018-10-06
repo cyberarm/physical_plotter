@@ -1,14 +1,15 @@
 package org.cyberarm.greece.engine;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.cyberarm.engine.Engine;
-import org.cyberarm.greece.states.BlinkinLedDriverState;
+import org.cyberarm.engine.CyberarmEngine;
+import org.cyberarm.greece.states.BlinkinLedDriverCyberarmState;
 
-@TeleOp(name = "Blinkin")
-public class BlinkinLedDriver extends Engine {
+@Disabled
+//@TeleOp(name = "Blinkin")
+public class BlinkinLedDriver extends CyberarmEngine {
   @Override
   public void setup() {
-    addState(new BlinkinLedDriverState());
+    addState(new BlinkinLedDriverCyberarmState());
   }
 }

@@ -1,14 +1,15 @@
 package org.cyberarm.greece.engine;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.cyberarm.engine.Engine;
-import org.cyberarm.greece.states.RevTouchSensorState;
+import org.cyberarm.engine.CyberarmEngine;
+import org.cyberarm.greece.states.RevTouchSensorCyberarmState;
 
-@TeleOp(name = "RevTouchSensor")
-public class RevTouchSensor extends Engine {
+@Disabled
+//@TeleOp(name = "RevTouchSensor")
+public class RevTouchSensor extends CyberarmEngine {
     @Override
     public void setup() {
-        addState(new RevTouchSensorState("touchSensor"));
+        addState(new RevTouchSensorCyberarmState("touchSensor"));
     }
 }

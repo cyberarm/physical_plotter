@@ -5,11 +5,10 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.cyberarm.container.InputChecker;
-import org.cyberarm.engine.State;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
+import org.cyberarm.engine.CyberarmState;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class BlinkinLedDriverState extends State {
+public class BlinkinLedDriverCyberarmState extends CyberarmState {
   ServoImplEx pwm_output;
   DistanceSensor distance;
 
@@ -23,11 +22,11 @@ public class BlinkinLedDriverState extends State {
 
   @Override
   public void init() {
-    pwm_output = (ServoImplEx) engine.hardwareMap.servo.get("pwm");
-    distance = engine.hardwareMap.get(DistanceSensor.class, "distance");
+    pwm_output = (ServoImplEx) cyberarmEngine.hardwareMap.servo.get("pwm");
+    distance = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance");
 
     pwm_output.setPwmRange(new PwmControl.PwmRange(1000.0, 2000.0));
-    inputChecker = new InputChecker(engine.gamepad1);
+    inputChecker = new InputChecker(cyberarmEngine.gamepad1);
   }
 
   /***
@@ -40,7 +39,7 @@ public class BlinkinLedDriverState extends State {
 
   @Override
   public void exec() {
-    if ((System.currentTimeMillis()) - engine.gamepad1.timestamp > 10_000) {
+    if ((System.currentTimeMillis()) - cyberarmEngine.gamepad1.timestamp > 10_000) {
       if (System.currentTimeMillis() > next_time) {
         pwm_target += pwm_step_size;
         if (pwm_target > max_pwm_target) {
@@ -69,11 +68,11 @@ public class BlinkinLedDriverState extends State {
 
   @Override
   public void telemetry() {
-    engine.telemetry.addData("PWM target", pwm_target);
-    engine.telemetry.addData("PWM position/power", do_math(pwm_target));
-    engine.telemetry.addData("Next change", ""+(next_time-System.currentTimeMillis())+" ms");
-    engine.telemetry.addData("Gamepad1 Timestamp", engine.gamepad1.timestamp);
-    engine.telemetry.addLine();
-    engine.telemetry.addData("Distance in MM", distance.getDistance(DistanceUnit.MM));
+    cyberarmEngine.telemetry.addData("PWM target", pwm_target);
+    cyberarmEngine.telemetry.addData("PWM position/power", do_math(pwm_target));
+    cyberarmEngine.telemetry.addData("Next change", ""+(next_time-System.currentTimeMillis())+" ms");
+    cyberarmEngine.telemetry.addData("Gamepad1 Timestamp", cyberarmEngine.gamepad1.timestamp);
+    cyberarmEngine.telemetry.addLine();
+    cyberarmEngine.telemetry.addData("Distance in MM", distance.getDistance(DistanceUnit.MM));
   }
 }

@@ -3,9 +3,9 @@ package org.cyberarm.greece.states;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 
-public class BillMotorRamp extends State {
+public class BillMotorRamp extends CyberarmState {
     private int travelDistance, travelOffset;
     private DcMotor motor;
     private long timeToRampMS;
@@ -14,7 +14,7 @@ public class BillMotorRamp extends State {
     private double power;
 
     public BillMotorRamp(String motorName, long timeToRampMS, int travelDistance) {
-        this.motor = engine.hardwareMap.dcMotor.get(motorName);
+        this.motor = cyberarmEngine.hardwareMap.dcMotor.get(motorName);
         this.timeToRampMS = timeToRampMS;
         this.travelDistance = travelDistance;
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -69,42 +69,42 @@ public class BillMotorRamp extends State {
     }
 
         public void telemetry() {
-        engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+        cyberarmEngine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
         if (hasRampedUp) {
-            engine.telemetry.addData("Ramped Up?", "✅");
+            cyberarmEngine.telemetry.addData("Ramped Up?", "✅");
         } else {
-            engine.telemetry.addData("Ramped Up?", "X");
+            cyberarmEngine.telemetry.addData("Ramped Up?", "X");
         }
         if (hasTravelled) {
-            engine.telemetry.addData("Travelled?", "✅");
+            cyberarmEngine.telemetry.addData("Travelled?", "✅");
         } else {
-            engine.telemetry.addData("Travelled?", "X");
+            cyberarmEngine.telemetry.addData("Travelled?", "X");
         }
 
         if (!hasRampedUp) {
-            engine.telemetry.addData("Power (ratio)", power);
-            engine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
-            engine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
-            engine.telemetry.addLine();
-            engine.telemetry.addLine(progressBar(25, power * 100.0));
+            cyberarmEngine.telemetry.addData("Power (ratio)", power);
+            cyberarmEngine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
+            cyberarmEngine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
+            cyberarmEngine.telemetry.addLine();
+            cyberarmEngine.telemetry.addLine(progressBar(25, power * 100.0));
 
         } else if (hasRampedUp && !hasTravelled) {
             double distanceRatio = ((motor.getCurrentPosition()-travelOffset) / (double) travelDistance);
-            engine.telemetry.addData("Distance (ratio)", distanceRatio);
-            engine.telemetry.addData("Travelled", motor.getCurrentPosition()-travelOffset);
-            engine.telemetry.addLine();
-            engine.telemetry.addLine(progressBar(25, distanceRatio * 100.0));
+            cyberarmEngine.telemetry.addData("Distance (ratio)", distanceRatio);
+            cyberarmEngine.telemetry.addData("Travelled", motor.getCurrentPosition()-travelOffset);
+            cyberarmEngine.telemetry.addLine();
+            cyberarmEngine.telemetry.addLine(progressBar(25, distanceRatio * 100.0));
 
         } else if (hasRampedUp && hasTravelled) {
-            engine.telemetry.addData("Power (ratio)", power);
-            engine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
-            engine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
-            engine.telemetry.addLine();
-            engine.telemetry.addLine(progressBar(25, Math.abs(power-1.0) * 100.0));
+            cyberarmEngine.telemetry.addData("Power (ratio)", power);
+            cyberarmEngine.telemetry.addData("Time elapsed", System.currentTimeMillis() - startTimeMs);
+            cyberarmEngine.telemetry.addData("Ramp Time (ms)", timeToRampMS);
+            cyberarmEngine.telemetry.addLine();
+            cyberarmEngine.telemetry.addLine(progressBar(25, Math.abs(power-1.0) * 100.0));
         } else if (getIsFinished()) {
-            engine.telemetry.addData("Ramped Down?", "✅");
+            cyberarmEngine.telemetry.addData("Ramped Down?", "✅");
         }
 
-        engine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+        cyberarmEngine.telemetry.addLine("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
     }
 }

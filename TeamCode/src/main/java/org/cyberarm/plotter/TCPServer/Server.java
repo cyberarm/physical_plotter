@@ -1,16 +1,13 @@
 package org.cyberarm.plotter.TCPServer;
 
 import android.annotation.TargetApi;
-import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.system.ErrnoException;
 import android.util.Log;
 
-import org.cyberarm.driver.Driver;
-import org.cyberarm.engine.Engine;
+import org.cyberarm.engine.CyberarmEngine;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
@@ -28,7 +25,7 @@ public class Server {
     int attempts = 0;
     while(attempts < 10) { // really big number
       try {
-        toneGenerator = Engine.driverStatic.toneGenerator;
+        toneGenerator = CyberarmEngine.driverStatic.toneGenerator;
         break;
       } catch (NullPointerException err) {
         attempts++;

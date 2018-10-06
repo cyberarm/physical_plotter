@@ -2,14 +2,13 @@ package org.cyberarm.greece.states;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-import org.cyberarm.engine.State;
-import org.cyberarm.greece.engine.RevTouchSensor;
+import org.cyberarm.engine.CyberarmState;
 
-public class RevTouchSensorState extends State {
+public class RevTouchSensorCyberarmState extends CyberarmState {
     private DigitalChannel touchSensor;
 
-    public RevTouchSensorState(String sensor) {
-        this.touchSensor = engine.hardwareMap.digitalChannel.get(sensor);
+    public RevTouchSensorCyberarmState(String sensor) {
+        this.touchSensor = cyberarmEngine.hardwareMap.digitalChannel.get(sensor);
         touchSensor.setMode(DigitalChannel.Mode.INPUT);
     }
 
@@ -24,6 +23,6 @@ public class RevTouchSensorState extends State {
 
     @Override
     public void telemetry() {
-        engine.telemetry.addData("Button is", touchSensor.getState());
+        cyberarmEngine.telemetry.addData("Button is", touchSensor.getState());
     }
 }

@@ -1,12 +1,14 @@
 package org.cyberarm.greece.engine;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.cyberarm.container.InputChecker;
 import org.cyberarm.greece.statues.Motor;
 
-@TeleOp(name = "RoverSimple")
+@Disabled
+//@TeleOp(name = "RoverSimple")
 public class Rover extends OpMode {
   Motor leftDrive, rightDrive;
   double speedRegulator = 0.0;

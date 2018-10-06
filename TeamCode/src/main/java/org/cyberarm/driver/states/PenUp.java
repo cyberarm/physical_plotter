@@ -1,16 +1,15 @@
 package org.cyberarm.driver.states;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 import org.cyberarm.engine.Support;
 
-public class PenUp extends State {
+public class PenUp extends CyberarmState {
   CRServo pen;
 
   public PenUp() {
-    pen = engine.hardwareMap.crservo.get("svPen");
+    pen = cyberarmEngine.hardwareMap.crservo.get("svPen");
   }
 
   @Override

@@ -1,9 +1,9 @@
 package org.cyberarm.driver.states;
 
 import org.cyberarm.driver.Driver;
-import org.cyberarm.engine.State;
+import org.cyberarm.engine.CyberarmState;
 
-public class Wait extends State {
+public class Wait extends CyberarmState {
   private final Driver driver;
   private long loopedWhileWaiting = 0;
 
@@ -21,7 +21,7 @@ public class Wait extends State {
 
   @Override
   public void telemetry() {
-    engine.telemetry.addLine("Waiting...");
-    engine.telemetry.addData("Looped While Waiting", loopedWhileWaiting);
+    cyberarmEngine.telemetry.addLine("Waiting...");
+    cyberarmEngine.telemetry.addData("Looped While Waiting", loopedWhileWaiting);
   }
 }

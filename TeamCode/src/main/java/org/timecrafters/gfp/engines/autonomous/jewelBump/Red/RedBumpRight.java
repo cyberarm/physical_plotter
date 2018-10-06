@@ -22,7 +22,7 @@ public class RedBumpRight extends SubEngine {
     @Override
     public void setProcesses() {
         addState(new Flipper(engine,-0.5,120, false,0));
-        //addState(new Flipper(engine, 0.5, 150));
+        //addState(new Flipper(cyberarmEngine, 0.5, 150));
     }
 
     @Override
