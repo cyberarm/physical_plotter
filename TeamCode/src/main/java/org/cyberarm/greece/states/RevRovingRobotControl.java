@@ -11,10 +11,13 @@ import org.cyberarm.container.InputChecker;
 import org.cyberarm.engine.CyberarmState;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.ArrayList;
+
 public class RevRovingRobotControl extends CyberarmState {
   private final DcMotor leftDrive, rightDrive;
   private final Servo steering;
   private final InputChecker inputChecker;
+  private final double average;
 
   private double speedKP = 1.0;
   private double steeringKP = 0.5;
@@ -24,6 +27,11 @@ public class RevRovingRobotControl extends CyberarmState {
                          laserDistanceSensor1,
                          laserDistanceSensor2,
                          laserDistanceSensor3;
+  private ArrayList<DistanceSensor> distanceSensors;
+
+  private int block = 22, // MM // 45 for Flat face, ~22 for waffle
+              sphere= 65, // MM
+              distanceKP=5;//MM
 
   public RevRovingRobotControl() {
     leftDrive  = cyberarmEngine.hardwareMap.dcMotor.get("leftDrive");
@@ -37,6 +45,14 @@ public class RevRovingRobotControl extends CyberarmState {
     laserDistanceSensor1 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance1");
     laserDistanceSensor2 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance2");
     laserDistanceSensor3 = cyberarmEngine.hardwareMap.get(DistanceSensor.class, "distance3");
+
+    distanceSensors = new ArrayList<>();
+    distanceSensors.add(laserDistanceSensor0);
+    distanceSensors.add(laserDistanceSensor1);
+    distanceSensors.add(laserDistanceSensor2);
+    distanceSensors.add(laserDistanceSensor3);
+
+    average = averageDistance();
   }
 
   public boolean getDistances(double distance) {
@@ -55,6 +71,15 @@ public class RevRovingRobotControl extends CyberarmState {
   }
 
   public double mmDistance(DistanceSensor sensor) { return sensor.getDistance(DistanceUnit.MM); }
+
+  public double averageDistance() {
+    double total = 0;
+    for (int i = 0; i < distanceSensors.size(); i++) {
+      total += mmDistance(distanceSensors.get(i));
+    }
+
+    return total / distanceSensors.size();
+  }
 
   @Override
   public void exec() {
@@ -83,6 +108,10 @@ public class RevRovingRobotControl extends CyberarmState {
 
   @Override
   public void telemetry() {
+    boolean foundBlock = false;
+    boolean foundSphere = false;
+    double highestPoint = 0;
+
     cyberarmEngine.telemetry.addLine();
 
     cyberarmEngine.telemetry.addLine("Rev Roving Robot");
@@ -91,10 +120,35 @@ public class RevRovingRobotControl extends CyberarmState {
     cyberarmEngine.telemetry.addData("Steering Position", steering.getPosition());
 
     cyberarmEngine.telemetry.addLine();
-    cyberarmEngine.telemetry.addData("Laser Distance Sensor 0", ""+laserDistanceSensor0.getDistance(DistanceUnit.MM)+" MM");
-    cyberarmEngine.telemetry.addData("Laser Distance Sensor 1", ""+laserDistanceSensor1.getDistance(DistanceUnit.MM)+" MM");
-    cyberarmEngine.telemetry.addData("Laser Distance Sensor 2", ""+laserDistanceSensor2.getDistance(DistanceUnit.MM)+" MM");
-    cyberarmEngine.telemetry.addData("Laser Distance Sensor 3", ""+laserDistanceSensor3.getDistance(DistanceUnit.MM)+" MM");
+    for (int i = 0; i < distanceSensors.size(); i++) {
+      cyberarmEngine.telemetry.addData("LaserDistanceSensor"+i, mmDistance(distanceSensors.get(i)));
+    }
+
+    cyberarmEngine.telemetry.addLine();
+
+    for (int i = 0; i < distanceSensors.size(); i++) {
+      double d = (mmDistance(distanceSensors.get(i))-average)*-1;
+      cyberarmEngine.telemetry.addData("LaserDistanceSensor"+i, d);
+      if (d > highestPoint) { highestPoint = d; }
+    }
+
+    cyberarmEngine.telemetry.addLine();
+
+    for (int i = 0; i < distanceSensors.size(); i++) {
+      cyberarmEngine.telemetry.addData("LaserDistanceSensor"+i, (mmDistance(distanceSensors.get(i))-averageDistance())*-1);
+    }
+    cyberarmEngine.telemetry.addData("Average Distance (1 sample)", average);
+
+    cyberarmEngine.telemetry.addLine();
+    cyberarmEngine.telemetry.addData("Highest Point", highestPoint);
+
+    if (sphere >= (highestPoint - distanceKP) && sphere <= (highestPoint + distanceKP)) {
+      foundSphere = true;
+    } else if (block >= (highestPoint - distanceKP) && block <= (highestPoint + distanceKP)) {
+      foundBlock = true;
+    }
+    cyberarmEngine.telemetry.addData("Block Found", foundBlock);
+    cyberarmEngine.telemetry.addData("Sphere Found", foundSphere);
   }
 
   @Override
