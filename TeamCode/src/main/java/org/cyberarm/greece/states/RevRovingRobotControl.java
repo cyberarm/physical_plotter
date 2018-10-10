@@ -1,6 +1,5 @@
 package org.cyberarm.greece.states;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -9,6 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.cyberarm.container.InputChecker;
 import org.cyberarm.engine.CyberarmState;
+import org.cyberarm.greece.statues.LaserObjectDetector;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ public class RevRovingRobotControl extends CyberarmState {
                          laserDistanceSensor2,
                          laserDistanceSensor3;
   private ArrayList<DistanceSensor> distanceSensors;
+
+  private LaserObjectDetector laserObjectDetector;
 
   private int block = 22, // MM // 45 for Flat face, ~22 for waffle
               sphere= 65, // MM
@@ -53,6 +55,7 @@ public class RevRovingRobotControl extends CyberarmState {
     distanceSensors.add(laserDistanceSensor3);
 
     average = averageDistance();
+    laserObjectDetector = new LaserObjectDetector(distanceSensors);
   }
 
   public boolean getDistances(double distance) {
@@ -86,6 +89,8 @@ public class RevRovingRobotControl extends CyberarmState {
     inputChecker.update();
     drivePower = cyberarmEngine.gamepad1.left_stick_y * speedKP;
 
+    laserObjectDetector.update();
+
     leftDrive.setPower(drivePower);
     rightDrive.setPower(drivePower);
 
@@ -118,6 +123,8 @@ public class RevRovingRobotControl extends CyberarmState {
     cyberarmEngine.telemetry.addData("Left Drive Position", leftDrive.getCurrentPosition());
     cyberarmEngine.telemetry.addData("Right Drive Position", rightDrive.getCurrentPosition());
     cyberarmEngine.telemetry.addData("Steering Position", steering.getPosition());
+
+    laserObjectDetector.telemetry(cyberarmEngine);
 
     cyberarmEngine.telemetry.addLine();
     for (int i = 0; i < distanceSensors.size(); i++) {
