@@ -42,7 +42,7 @@ public abstract class CyberarmEngineV2 extends OpMode {
       // The engine is now out of states.
       stop();
 
-      telemetry.addLine("" + this.getClass() + "is out of states to run!");
+      telemetry.addLine("" + this.getClass() + " is out of states to run!");
       telemetry.addLine();
       return;
     }
@@ -58,10 +58,12 @@ public abstract class CyberarmEngineV2 extends OpMode {
   }
 
   private void stateTelemetry(CyberarmStateV2 state) {
-    state.telemetry();
+    if (!state.getHasFinished()) {
+      state.telemetry();
+    }
 
-    if (state.hasChildren()) {
-      for(CyberarmStateV2 childState : cyberarmStates) {
+    for(CyberarmStateV2 childState : state.children) {
+      if (!childState.getHasFinished()) {
         stateTelemetry(childState);
       }
     }
@@ -72,10 +74,8 @@ public abstract class CyberarmEngineV2 extends OpMode {
   private void initState(CyberarmStateV2 state) {
     state.init();
 
-    if (state.hasChildren()) {
-      for(CyberarmStateV2 childState : cyberarmStates) {
-        initState(childState);
-      }
+    for(CyberarmStateV2 childState : state.children) {
+      initState(childState);
     }
   }
 
@@ -84,21 +84,20 @@ public abstract class CyberarmEngineV2 extends OpMode {
   private void stopState(CyberarmStateV2 state) {
     state.stop();
 
-    if (state.hasChildren()) {
-      for(CyberarmStateV2 childState : cyberarmStates) {
-        stopState(childState);
-      }
+    for(CyberarmStateV2 childState : state.children) {
+      stopState(childState);
     }
   }
 
   // Recursively start up states
   private void runState(CyberarmStateV2 state) {
     final CyberarmStateV2 finalState = state;
+    state.startTime = System.currentTimeMillis();
 
     new Thread(new Runnable() {
       @Override
       public void run() {
-        finalState.exec();
+        finalState.run();
       }
     }).start();
 

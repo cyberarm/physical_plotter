@@ -1,5 +1,7 @@
 package org.cyberarm.engine.V2;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -9,14 +11,14 @@ import java.util.ArrayList;
 
 public abstract class CyberarmStateV2 implements Runnable {
 
-  private volatile boolean hasFinished, isRunning;
+  private volatile boolean hasFinished;
   public static String TAG = "PROGRAM.STATE";
   public org.cyberarm.engine.V2.CyberarmEngineV2 cyberarmEngine = CyberarmEngineV2.instance;
   public ArrayList<CyberarmStateV2> children;
+  public long startTime;
 
   protected CyberarmStateV2() {
     hasFinished = false;
-    isRunning  = false;
 
     children   = new ArrayList<>();
   }
@@ -50,11 +52,12 @@ public abstract class CyberarmStateV2 implements Runnable {
 
   // Add a state which runs in parallel to this one
   public void addParallelState(CyberarmStateV2 state) {
+    Log.i(TAG, "Adding " + state.getClass() + " to " + this.getClass());
     children.add(state);
   }
 
   public boolean hasChildren() {
-    return children.size() > 0;
+    return (children.size() > 0);
   }
 
   public boolean childrenHaveFinished() {
@@ -79,20 +82,17 @@ public abstract class CyberarmStateV2 implements Runnable {
     return allDone;
   }
 
+  // Returns the number of milliseconds this state has been running for
+  public double runTime() {
+    return (System.currentTimeMillis() - startTime);
+  }
+
   public void setHasFinished(boolean value) {
     hasFinished = value;
   }
 
   public boolean getHasFinished() {
     return hasFinished;
-  }
-
-  public void setIsRunning(boolean value) {
-    isRunning = value;
-  }
-
-  public boolean getIsRunning() {
-    return isRunning;
   }
 
   public void sleep(long timems) {
